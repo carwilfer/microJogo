@@ -9,12 +9,9 @@ import com.infnet.empresa.repository.EmpresaRepository;
 import com.infnet.empresa.service.EmpresaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -23,35 +20,29 @@ public class EmpresaListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmpresaListener.class);
 
-    private final EmpresaRepository empresaRepository;
+    private final EmpresaService empresaService;
     private final ObjectMapper objectMapper;
 
-    public EmpresaListener(EmpresaRepository empresaRepository, ObjectMapper objectMapper) {
-        this.empresaRepository = empresaRepository;
+    public EmpresaListener(EmpresaService empresaService, ObjectMapper objectMapper) {
+        this.empresaService = empresaService;
         this.objectMapper = objectMapper;
     }
 
-    @RabbitListener(queues = RabbitConfig.QUEUE_NAME)
-    public void processarMensagem(byte[] message) {
+    @RabbitListener(queues = "empresaQueue")
+    public void processarMensagem(String message) {
         try {
-            String messageStr = new String(message, "UTF-8");
-            LOGGER.info("Mensagem recebida: {}", messageStr);
-            EmpresaDTO empresaDTO = objectMapper.readValue(messageStr, EmpresaDTO.class);
+            LOGGER.info("Mensagem recebida: {}", message);
 
-            Empresa empresa = new Empresa();
-            empresa.setNome(empresaDTO.getNome());
-            empresa.setEmail(empresaDTO.getEmail());
-            empresa.setSenha(empresaDTO.getSenha());
-            empresa.setAtivo(empresaDTO.getAtivo());
-            empresa.setCnpj(empresaDTO.getCnpj());
-            empresa.setRazaoSocial(empresaDTO.getRazaoSocial());
+            EmpresaDTO empresaDTO = objectMapper.readValue(message, EmpresaDTO.class);
+            LOGGER.info("Mensagem desserializada com sucesso2: {}", empresaDTO);
 
-            empresaRepository.save(empresa);
-
-            LOGGER.info("Empresa Criada com sucesso: {}", empresa);
-
+            if (empresaDTO.getCnpj() != null) {
+                empresaService.criarEmpresa(empresaDTO);
+            }
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erro ao desserializar a mensagem: {}", e.getMessage(), e);
         } catch (Exception e) {
-            LOGGER.error("Erro ao processar mensagem: {}", e.getMessage(), e);
+            LOGGER.error("Erro ao processar a mensagem: {}", e.getMessage(), e);
         }
     }
 }

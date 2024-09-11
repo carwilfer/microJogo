@@ -1,6 +1,6 @@
 package com.infnet.empresa.controller;
 
-import com.infnet.empresa.configRabbit.RabbitConfig;
+import com.infnet.empresa.consumer.EmpresaConsumer;
 import com.infnet.empresa.dto.EmpresaDTO;
 import com.infnet.empresa.service.EmpresaService;
 import jakarta.validation.Valid;
@@ -35,7 +35,7 @@ public class EmpresaController {
     @GetMapping("listar")
     public ResponseEntity<List<EmpresaDTO>> listarEmpresas() {
         List<EmpresaDTO> empresas = empresaService.listarTodas();
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, "empresa.listed", empresas);
+        //rabbitTemplate.convertAndSend(EmpresaConsumer.EXCHANGE_NAME, "empresa.listed", empresas);
         return ResponseEntity.ok(empresas);
     }
 

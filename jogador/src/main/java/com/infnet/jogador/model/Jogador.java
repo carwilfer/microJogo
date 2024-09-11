@@ -1,4 +1,4 @@
-package com.infnet.empresa.model;
+package com.infnet.jogador.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
-@DiscriminatorValue("EMPRESA")
-@Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Empresa {
+public class Jogador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,14 +39,12 @@ public class Empresa {
     @Column(name = "ativo")
     private Boolean ativo = true;
 
-    @Column(name = "razao_social")
-    private String razaoSocial;
-
-    @Pattern(regexp = "^\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}$", message = "CNPJ is not valid")
+    @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "CPF não é válido")
     @NotBlank
-    @Column(name = "cnpj")
-    private String cnpj;
+    private String cpf;
 
-    // Construtor padrão
-    public Empresa() {}
+    @ElementCollection
+    @CollectionTable(name = "amizade", joinColumns = @JoinColumn(name = "jogador_id"))
+    @Column(name = "amizade_id")
+    private List<Long> amizades;
 }

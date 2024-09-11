@@ -1,6 +1,6 @@
 package com.infnet.empresa.service;
 
-import com.infnet.empresa.configRabbit.RabbitConfig;
+//import com.infnet.empresa.configRabbit.RabbitConfig;
 import com.infnet.empresa.dto.EmpresaDTO;
 import com.infnet.empresa.model.Empresa;
 import com.infnet.empresa.repository.EmpresaRepository;
@@ -26,16 +26,8 @@ public class EmpresaService {
     }
 
     public EmpresaDTO criarEmpresa(EmpresaDTO empresaDTO) {
-        Empresa empresa = new Empresa();
-        empresa.setRazaoSocial(empresaDTO.getRazaoSocial());
-        empresa.setCnpj(empresaDTO.getCnpj());
-        empresa.setAtivo(empresaDTO.getAtivo());
-
+        Empresa empresa = empresaDTO.toEntity();
         Empresa empresaSalva = empresaRepository.save(empresa);
-
-        // Enviar mensagem para o RabbitMQ quando uma empresa for criada
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, "empresa.created", empresaSalva);
-
         return new EmpresaDTO(empresaSalva);
     }
 

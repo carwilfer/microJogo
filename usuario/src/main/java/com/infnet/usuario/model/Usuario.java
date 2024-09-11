@@ -40,11 +40,11 @@ public class Usuario {
     @Column(name = "ativo")
     private Boolean ativo = true;
 
-    @Column(name = "cnpj")
-    private String cnpj;
-
     @Column(name = "razao_social")
     private String razaoSocial;
+
+    @Column(name = "cnpj")
+    private String cnpj;
 
     @Column(name = "cpf")
     private String cpf;

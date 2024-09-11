@@ -12,9 +12,9 @@ public class EmpresaDTO extends UsuarioDTO {
     private String razaoSocial;
     private String cnpj;
 
-    public EmpresaDTO(String nome, String email, String senha, Boolean ativo, String cnpj, String razaoSocial) {
+    public EmpresaDTO(String nome, String email, String senha, Boolean ativo, String razaoSocial, String cnpj) {
         super(nome, email, senha, ativo);
-        this.cnpj = cnpj;
         this.razaoSocial = razaoSocial;
+        this.cnpj = cnpj;
     }
 }

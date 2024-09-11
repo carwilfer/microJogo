@@ -37,4 +37,10 @@ public class RabbitMQProducer {
         LOGGER.info("Enviando mensagem para empresaQueue [{}]", messageJson);
         rabbitTemplate.convertAndSend(RabbitConfig.EMPRESA_EXCHANGE_NAME, RabbitConfig.EMPRESA_ROUTING_KEY, messageJson);
     }
+
+    public void sendMessageToJogadorQueue(Object message) throws JsonProcessingException {
+        String messageJson = objectMapper.writeValueAsString(message);
+        LOGGER.info("Enviando mensagem para jogadorQueue [{}]", messageJson);
+        rabbitTemplate.convertAndSend(RabbitConfig.JOGADOR_EXCHANGE_NAME, RabbitConfig.JOGADOR_ROUTING_KEY, messageJson);
+    }
 }

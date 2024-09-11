@@ -16,8 +16,8 @@ public class UsuarioDTO {
     private String senha;
     private Boolean ativo = true;
     private String tipoUsuario;
-    private String cnpj;
     private String razaoSocial;
+    private String cnpj;
     private String cpf;
 
     public UsuarioDTO() {}
@@ -36,8 +36,8 @@ public class UsuarioDTO {
         this.senha = usuario.getSenha();
         this.ativo = usuario.getAtivo();
         this.tipoUsuario = usuario.getTipoUsuario();
-        this.cnpj = usuario.getCnpj();
         this.razaoSocial = usuario.getRazaoSocial();
+        this.cnpj = usuario.getCnpj();
         this.cpf = usuario.getCpf();
     }
 }

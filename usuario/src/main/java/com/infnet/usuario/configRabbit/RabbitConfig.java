@@ -30,6 +30,10 @@ public class RabbitConfig {
     public static final String EMPRESA_EXCHANGE_NAME = "empresaExchange";
     public static final String EMPRESA_ROUTING_KEY = "empresa.#";
 
+    public static final String JOGADOR_QUEUE = "jogadorQueue";
+    public static final String JOGADOR_EXCHANGE_NAME = "jogadorExchange";
+    public static final String JOGADOR_ROUTING_KEY = "jogador.#";
+
     @Bean
     public Queue queue() {
         return new Queue(QUEUE_NAME, true);
@@ -38,6 +42,11 @@ public class RabbitConfig {
     @Bean
     public Queue empresaQueue() {
         return new Queue(EMPRESA_QUEUE_NAME, true); // true para durable
+    }
+    //para a fila da jogador
+    @Bean
+    public Queue jogadorQueue() {
+        return new Queue(JOGADOR_QUEUE, true); // true para durable
     }
 
     @Bean
@@ -49,6 +58,11 @@ public class RabbitConfig {
     public TopicExchange empresaExchange() {
         return new TopicExchange(EMPRESA_EXCHANGE_NAME);
     }
+    //para a fila da jogador
+    @Bean
+    public TopicExchange jogadorExchange() {
+        return new TopicExchange(JOGADOR_EXCHANGE_NAME);
+    }
 
     @Bean
     public Binding bindingUsuario(Queue queue, TopicExchange exchange) {
@@ -58,6 +72,11 @@ public class RabbitConfig {
     @Bean
     public Binding bindingEmpresaQueue(Queue empresaQueue, TopicExchange empresaExchange) {
         return BindingBuilder.bind(empresaQueue).to(empresaExchange).with(EMPRESA_ROUTING_KEY);
+    }
+    //para a fila da jogador
+    @Bean
+    public Binding bindingJogadorQueue(Queue jogadorQueue, TopicExchange jogadorExchange) {
+        return BindingBuilder.bind(jogadorQueue).to(jogadorExchange).with(JOGADOR_ROUTING_KEY);
     }
 
     @Bean

@@ -1,7 +1,10 @@
-package com.infnet.empresa.dto;
+package com.infnet.jogador.dto;
 
 import jakarta.validation.Valid;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -14,6 +17,5 @@ public class UsuarioDTO {
     private String senha;
     private Boolean ativo;
     private String tipoUsuario;
-    private String razaoSocial;
-    private String cnpj;
+    private String cpf;
 }

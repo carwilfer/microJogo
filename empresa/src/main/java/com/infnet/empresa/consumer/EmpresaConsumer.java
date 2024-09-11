@@ -1,50 +1,48 @@
 package com.infnet.empresa.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.infnet.empresa.configRabbit.RabbitConfig;
+import com.infnet.empresa.dto.EmpresaDTO;
 import com.infnet.empresa.dto.UsuarioDTO;
-import com.infnet.empresa.model.Empresa;
 import com.infnet.empresa.repository.EmpresaRepository;
+import com.infnet.empresa.service.EmpresaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+
+@Component
 public class EmpresaConsumer {
+
+    @Autowired
+    private EmpresaService empresaService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmpresaConsumer.class);
 
-    private final EmpresaRepository empresaRepository;
-    private final ObjectMapper objectMapper;
-
-    public EmpresaConsumer(EmpresaRepository empresaRepository, ObjectMapper objectMapper) {
-        this.empresaRepository = empresaRepository;
-        this.objectMapper = objectMapper;
-    }
-
-    @RabbitListener(queues = RabbitConfig.QUEUE_NAME)
+    @RabbitListener(queues = "empresaQueue")
     public void consumirUsuarioCriado(String mensagem) {
+        LOGGER.info("Mensagem recebida: [{}]", mensagem);
+
         try {
-            // Converte a mensagem JSON para o objeto UsuarioDTO
-            UsuarioDTO usuarioDTO = objectMapper.readValue(mensagem, UsuarioDTO.class);
+            // Verifica se a mensagem é um array e extrai o primeiro item se for o caso
+            if (mensagem.startsWith("[") && mensagem.endsWith("]")) {
+                mensagem = mensagem.substring(1, mensagem.length() - 1);
+            }
 
-            if (usuarioDTO.getCnpj() != null) {
-                Empresa empresa = new Empresa();
-                empresa.setNome(usuarioDTO.getNome());
-                empresa.setEmail(usuarioDTO.getEmail());
-                empresa.setSenha(usuarioDTO.getSenha());
-                empresa.setAtivo(usuarioDTO.getAtivo());
-                empresa.setCnpj(usuarioDTO.getCnpj());
-                empresa.setRazaoSocial(usuarioDTO.getRazaoSocial());
+            EmpresaDTO empresaDTO = objectMapper.readValue(mensagem, EmpresaDTO.class);
+            LOGGER.info("Mensagem desserializada com sucesso: [{}]", empresaDTO);
 
-                empresaRepository.save(empresa);
+            if (empresaDTO.getCnpj() != null) {
+                empresaService.criarEmpresa(empresaDTO);
             }
         } catch (Exception e) {
-            // Registrar o erro e tratar a exceção
-            e.printStackTrace();
+            LOGGER.error("Erro ao processar mensagem", e);
         }
-        LOGGER.info("Empresa recebida com sucesso: [{}]", mensagem);
     }
 }

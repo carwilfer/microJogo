@@ -68,6 +68,13 @@ public class UsuarioService {
         // Enviar mensagem para o RabbitMQ
         try {
             rabbitMQProducer.sendMessage(usuarioDTOCriado);
+            // Se o usuário criado for uma empresa, enviar também para a fila empresaQueue
+            if ("EMPRESA".equals(usuario.getTipoUsuario())) {
+                rabbitMQProducer.sendMessageToEmpresaQueue(usuarioDTOCriado);
+            }
+            if ("JOGADOR".equals(usuario.getTipoUsuario())) {
+                rabbitMQProducer.sendMessageToJogadorQueue(usuarioDTOCriado);
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Erro ao processar mensagem JSON", e);
         }
