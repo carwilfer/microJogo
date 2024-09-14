@@ -5,6 +5,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -33,6 +34,11 @@ public class RabbitConfig {
     @Bean
     public Binding bindingUsuario(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with(CONTA_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue contaCriarContaQueue() {
+        return new Queue("conta_CriarQueue", true);  // true para que a fila seja durável
     }
 
     @Bean

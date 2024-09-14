@@ -1,5 +1,6 @@
 package com.infnet.jogo.service;
 
+import com.infnet.jogo.controller.BibliotecaController;
 import com.infnet.jogo.dto.BibliotecaDTO;
 import com.infnet.jogo.dto.JogoDTO;
 import com.infnet.jogo.model.Biblioteca;
@@ -7,6 +8,8 @@ import com.infnet.jogo.model.Jogo;
 import com.infnet.jogo.repository.BibliotecaRepository;
 import com.infnet.jogo.repository.JogoRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class BibliotecaService {
 
+    private static final Logger log = LoggerFactory.getLogger(BibliotecaService.class);
     @Autowired
     private JogoRepository jogoRepository;
 
@@ -30,14 +34,21 @@ public class BibliotecaService {
     @Transactional
     public Biblioteca adicionarJogo(BibliotecaDTO bibliotecaDTO) {
         try {
-           Biblioteca biblioteca = new Biblioteca();
-           Optional<Biblioteca> bibliotecaOpt = bibliotecaRepository.findByJogadorId(bibliotecaDTO.getJogadorId());
-           biblioteca = bibliotecaOpt.orElseGet(() -> criarBiblioteca((bibliotecaDTO.getJogadorId())));
+            Biblioteca biblioteca = bibliotecaRepository.findByJogadorId(bibliotecaDTO.getUsuarioId())
+                    .orElseGet(() -> criarBiblioteca(bibliotecaDTO.getUsuarioId()));
 
-            Jogo jogo = jogoRepository.findById(bibliotecaDTO.getJogos())
-                    .orElseThrow(() -> new IllegalArgumentException("Jogo não encontrado para o ID: " + bibliotecaDTO.getJogos()));
+            // Inicializar lista de jogos se for null
+            if (biblioteca.getJogos() == null) {
+                biblioteca.setJogos(new ArrayList<>());
+            }
 
-            biblioteca.getJogos().add(jogo);
+            // Adicionar o jogo à lista de jogos da biblioteca
+            Jogo jogo = jogoRepository.findById(bibliotecaDTO.getJogoId())
+                    .orElseThrow(() -> new IllegalArgumentException("Jogo não encontrado para o ID: " + bibliotecaDTO.getJogoId()));
+
+            if (!biblioteca.getJogos().contains(jogo)) {
+                biblioteca.getJogos().add(jogo);
+            }
 
             return bibliotecaRepository.save(biblioteca);
         } catch (Exception e) {
@@ -59,11 +70,16 @@ public class BibliotecaService {
                 .collect(Collectors.toList());
     }
 
+    public Biblioteca findByJogadorId(Long jogadorId) {
+        return bibliotecaRepository.findByJogadorId(jogadorId)
+                .orElseThrow(() -> new IllegalArgumentException("Biblioteca não encontrada para o jogador ID: " + jogadorId));
+    }
+
     // Método para criar uma nova biblioteca
     public Biblioteca criarBiblioteca(Long jogadorId) {
         Biblioteca novaBiblioteca = new Biblioteca();
         novaBiblioteca.setJogadorId(jogadorId);
-        novaBiblioteca.setJogos(new ArrayList<>()); // Inicia com uma lista vazia de jogos
-        return bibliotecaRepository.save(novaBiblioteca); // Salva a nova biblioteca no banco de dados
+        novaBiblioteca.setJogos(new ArrayList<>());
+        return bibliotecaRepository.save(novaBiblioteca);
     }
 }

@@ -21,22 +21,44 @@ public class RabbitConfig {
     public static final String BIBLIOTECA_ROUTING_KEY = "biblioteca.#";
 
     public static final String CONTA_QUEUE_NAME = "conta_Queue";
+    //public static final String CONTA_QUEUE_NAME = "conta_CriarQueue";
     public static final String CONTA_EXCHANGE_NAME = "contaExchange";
     public static final String CONTA_ROUTING_KEY = "conta.#";
 
+    //Para a fila da BIBLIOTECA que está em jogos
     @Bean
-    public Queue queue() {
+    public Queue bibliotecaQueue() {
         return new Queue(BIBLIOTECA_QUEUE_NAME, true);
     }
 
+    //Para a fila da CONTA
     @Bean
-    public TopicExchange exchange() {
+    public Queue contaQueue() {
+        return new Queue(CONTA_QUEUE_NAME, true);
+    }
+
+    //Para a BIBLIOTECA
+    @Bean
+    public TopicExchange bibliotecaExchange() {
         return new TopicExchange(BIBLIOTECA_EXCHANGE_NAME);
     }
 
+    //Para a CONTA
     @Bean
-    public Binding bindingUsuario(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(BIBLIOTECA_ROUTING_KEY);
+    public TopicExchange contaExchange() {
+        return new TopicExchange(CONTA_EXCHANGE_NAME);
+    }
+
+    //Para a BIBLIOTECA
+    @Bean
+    public Binding bibliotecaBindingUsuario(Queue bibliotecaQueue, TopicExchange bibliotecaExchange) {
+        return BindingBuilder.bind(bibliotecaQueue).to(bibliotecaExchange).with(BIBLIOTECA_ROUTING_KEY);
+    }
+
+    //Para a CONTA
+    @Bean
+    public Binding contaBindingUsuario(Queue contaQueue, TopicExchange contaExchange) {
+        return BindingBuilder.bind(contaQueue).to(contaExchange).with(CONTA_ROUTING_KEY);
     }
 
     @Bean

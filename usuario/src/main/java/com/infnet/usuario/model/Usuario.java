@@ -50,5 +50,5 @@ public class Usuario {
     private String cpf;
 
     @Column(name = "tipo_usuario")
-    private String tipoUsuario;
+    private String tipoUsuario; // Pode ser 'EMPRESA', 'JOGADOR', 'ADMIN'
 }

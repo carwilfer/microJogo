@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableFeignClients(basePackages = "com.infnet.conta.client")
+@EnableFeignClients
 public class ContaApplication {
 
 	public static void main(String[] args) {

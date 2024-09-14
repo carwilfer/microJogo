@@ -68,12 +68,12 @@ public class JogoService {
                 });
     }
 
-    public List<JogoDTO>encontrarEmpresasId(Long id) throws Exception {
-        List<JogoDTO> jogoList = jogoRepository.encontrarEmpresasId(id);
+    public List<Jogo>encontrarEmpresasId(Long id) throws Exception {
+        List<Jogo> jogoList = jogoRepository.encontrarEmpresasId(id);
         if(!jogoList.isEmpty()){
             return jogoList;
         }else {
-            throw new Exception("Request not fout");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
         }
     }
 
@@ -98,15 +98,20 @@ public class JogoService {
     }
 
     private EmpresaDTO validarEmpresa(Long empresaId) {
-        try {
-            EmpresaDTO empresaDTO = empresaClient.encontrarPorId(empresaId);
-            if (empresaDTO == null) {
-                throw new IllegalArgumentException("Empresa não encontrada para o ID: " + empresaId);
-            }
-            return empresaDTO;
-        } catch (FeignException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao comunicar com o serviço de empresa", e);
-        }
+        return Optional.ofNullable(empresaClient.encontrarPorId(empresaId))
+                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada para o ID: " + empresaId));
     }
+
+//    private EmpresaDTO validarEmpresa(Long empresaId) {
+//        try {
+//            EmpresaDTO empresaDTO = empresaClient.encontrarPorId(empresaId);
+//            if (empresaDTO == null) {
+//                throw new IllegalArgumentException("Empresa não encontrada para o ID: " + empresaId);
+//            }
+//            return empresaDTO;
+//        } catch (FeignException e) {
+//            e.printStackTrace();
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao comunicar com o serviço de empresa", e);
+//        }
+//    }
 }

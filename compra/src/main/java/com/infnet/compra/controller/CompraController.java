@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/compras")
+@RequestMapping("api/compras")
 public class CompraController {
 
     @Autowired
     private CompraService compraService;
 
-    @PostMapping
+    @PostMapping("/criar")
     public ResponseEntity<Compra> criarCompra(@RequestBody Compra compra) {
         try {
             Compra novaCompra = compraService.criarCompra(compra);

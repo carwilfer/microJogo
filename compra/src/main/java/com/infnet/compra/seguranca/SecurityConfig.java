@@ -1,4 +1,4 @@
-package com.infnet.jogador.seguranca;
+package com.infnet.compra.seguranca;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/jogadores/**", "/api/jogos/**", "/api/contas/**")
+                        .requestMatchers("/api/contas/**", "/api/compras/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions().sameOrigin())

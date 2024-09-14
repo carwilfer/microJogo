@@ -23,6 +23,9 @@ public class Conta {
     private boolean ativo;
     private double saldo;
 
+    @Column(name = "tipo_usuario")
+    private String tipoUsuario;
+
     private Long usuarioId;
 
     @ElementCollection

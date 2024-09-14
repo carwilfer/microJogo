@@ -27,6 +27,7 @@ public class UsuarioDTO {
         this.email = email;
         this.senha = senha;
         this.ativo = ativo;
+        this.tipoUsuario = "ADMIN";
     }
 
     public UsuarioDTO(Usuario usuario) {

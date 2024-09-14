@@ -1,6 +1,7 @@
 package com.infnet.usuario.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.infnet.usuario.dto.AdminDTO;
 import com.infnet.usuario.dto.EmpresaDTO;
 import com.infnet.usuario.dto.JogadorDTO;
 import com.infnet.usuario.dto.UsuarioDTO;
@@ -37,7 +38,9 @@ public class UsuarioService {
         usuario.setAtivo(usuarioDTO.getAtivo());
 
         // Definindo o tipo de usuário e dados específicos
-        if (usuarioDTO.getCnpj() != null) {
+        if ("ADMIN".equals(usuarioDTO.getTipoUsuario())) {
+            usuario.setTipoUsuario("ADMIN");
+        } else if (usuarioDTO.getCnpj() != null) {
             usuario.setTipoUsuario("EMPRESA");
             usuario.setCnpj(usuarioDTO.getCnpj());
             usuario.setRazaoSocial(usuarioDTO.getRazaoSocial());
@@ -50,7 +53,12 @@ public class UsuarioService {
 
         // Criação da DTO concreta
         UsuarioDTO usuarioDTOCriado;
-        if ("EMPRESA".equals(usuario.getTipoUsuario())) {
+        if ("ADMIN".equals(usuario.getTipoUsuario())) {
+            usuarioDTOCriado = new AdminDTO(usuario.getNome(),
+                    usuario.getEmail(),
+                    usuario.getSenha(),
+                    usuario.getAtivo());
+        } else if ("EMPRESA".equals(usuario.getTipoUsuario())) {
             usuarioDTOCriado = new EmpresaDTO(usuario.getNome(),
                     usuario.getEmail(),
                     usuario.getSenha(),
@@ -65,14 +73,11 @@ public class UsuarioService {
                     usuario.getCpf());
         }
 
-        // Enviar mensagem para o RabbitMQ
+        // Enviar mensagem para o RabbitMQ apenas para EMPRESA e JOGADOR
         try {
-            rabbitMQProducer.sendMessage(usuarioDTOCriado);
-            // Se o usuário criado for uma empresa, enviar também para a fila empresaQueue
             if ("EMPRESA".equals(usuario.getTipoUsuario())) {
                 rabbitMQProducer.sendMessageToEmpresaQueue(usuarioDTOCriado);
-            }
-            if ("JOGADOR".equals(usuario.getTipoUsuario())) {
+            } else if ("JOGADOR".equals(usuario.getTipoUsuario())) {
                 rabbitMQProducer.sendMessageToJogadorQueue(usuarioDTOCriado);
             }
         } catch (JsonProcessingException e) {

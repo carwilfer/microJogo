@@ -1,6 +1,7 @@
 package com.infnet.jogo.controller;
 
 import com.infnet.jogo.dto.JogoDTO;
+import com.infnet.jogo.model.Jogo;
 import com.infnet.jogo.service.JogoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/jogos")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class JogoController {
 
     @Autowired
@@ -34,8 +35,8 @@ public class JogoController {
     }
 
     @GetMapping("/listar/jogosEmpresa/{id}")
-    public ResponseEntity<List<JogoDTO>> encontrarEmpresasId(@PathVariable Long id) throws Exception {
-        List<JogoDTO> jogos = jogoService.encontrarEmpresasId(id);
+    public ResponseEntity<List<Jogo>> encontrarEmpresasId(@PathVariable Long id) throws Exception {
+        List<Jogo> jogos = jogoService.encontrarEmpresasId(id);
         return ResponseEntity.ok(jogos);
     }
 

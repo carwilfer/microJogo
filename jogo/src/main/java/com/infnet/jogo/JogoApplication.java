@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableFeignClients(basePackages = "com.infnet.jogo.client")
+@EnableFeignClients
 public class JogoApplication {
 
 	public static void main(String[] args) {

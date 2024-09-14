@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableFeignClients(basePackages = "com.infnet.compra.client")
+@EnableFeignClients
 public class CompraApplication {
 
 	public static void main(String[] args) {

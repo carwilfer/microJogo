@@ -53,23 +53,6 @@ public class RabbitConfig {
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(jsonMessageConverter()); // Certifique-se de que isso está configurado corretamente
-        factory.setErrorHandler(new ErrorHandler() {
-            private final Logger logger = LoggerFactory.getLogger(RabbitConfig.class);
-
-            @Override
-            public void handleError(Throwable t) {
-                logger.error("Erro ao processar mensagem: {}", t.getMessage(), t);
-                // Implementar lógica de tratamento de exceções aqui
-            }
-        });
-        return factory;
-    }
-
-    @Bean
     public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, EmpresaListener usuarioListener) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -88,5 +71,11 @@ public class RabbitConfig {
         });
 
         return container;
+    }
+    @Bean
+    public MessageListenerAdapter listenerAdapter(EmpresaListener empresaListener) {
+        MessageListenerAdapter adapter = new MessageListenerAdapter(empresaListener, "processMessage");
+        adapter.setMessageConverter(jsonMessageConverter());
+        return adapter;
     }
 }

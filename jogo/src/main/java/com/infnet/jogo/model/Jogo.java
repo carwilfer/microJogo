@@ -25,4 +25,8 @@ public class Jogo {
     private Long empresaId;
     private String cnpj;
     private String nomeEmpresa;
+
+    @ManyToOne
+    @JoinColumn(name = "biblioteca_id")  // Cria a coluna biblioteca_id na tabela Jogo
+    private Biblioteca biblioteca;
 }

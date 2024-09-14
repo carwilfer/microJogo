@@ -4,17 +4,19 @@ import com.infnet.conta.dto.CompraDTO;
 import com.infnet.conta.dto.ContaDTO;
 import com.infnet.conta.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/contas")
+@RequestMapping("/api/contas")
 public class ContaController {
 
     @Autowired
     private ContaService contaService;
 
-    @PostMapping
+
+    @PostMapping("/criar")
     public ResponseEntity<ContaDTO> createConta(@RequestBody ContaDTO contaDTO) {
         ContaDTO createdConta = contaService.createConta(contaDTO);
         return ResponseEntity.ok(createdConta);
@@ -31,12 +33,12 @@ public class ContaController {
     }
 
     @PostMapping("/compra")
-    public ResponseEntity<Void> processarCompra(@RequestBody CompraDTO compraDTO) {
-        Boolean success = contaService.atualizarSaldo(compraDTO);
+    public ResponseEntity<Void> processarCompra(@RequestBody CompraDTO compraDTO, @RequestParam Long usuarioId) {
+        Boolean success = contaService.atualizarSaldo(compraDTO, usuarioId);
         if (success) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 }
