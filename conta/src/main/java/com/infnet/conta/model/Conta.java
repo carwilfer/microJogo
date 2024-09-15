@@ -33,4 +33,6 @@ public class Conta {
 
     @ElementCollection
     private List<Long> compraIds;
+
+    
 }

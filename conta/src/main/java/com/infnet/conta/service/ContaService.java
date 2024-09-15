@@ -48,8 +48,15 @@ public class ContaService {
         conta.setLimiteDisponivel(contaDTO.getLimiteDisponivel());
         conta.setAtivo(contaDTO.isAtivo());
         conta.setUsuarioId(contaDTO.getUsuarioId());
+        conta.setSaldo(contaDTO.getSaldo());
         conta.setCompraIds(new ArrayList<>());
         Conta savedConta = contaRepository.save(conta);
+        // Criar DTO de resposta
+        ContaDTO responseDTO = convertToDTO(savedConta);
+
+        // Adicionar CPF e CNPJ na resposta
+        responseDTO.setCpf(usuario.getCpf());
+        responseDTO.setCnpj(usuario.getCnpj());
         return convertToDTO(savedConta);
     }
 

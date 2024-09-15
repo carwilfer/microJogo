@@ -1,12 +1,16 @@
 package com.infnet.conta.controller;
 
+import com.infnet.conta.client.UsuarioClient;
 import com.infnet.conta.dto.CompraDTO;
 import com.infnet.conta.dto.ContaDTO;
+import com.infnet.conta.dto.UsuarioDTO;
+import com.infnet.conta.model.Conta;
 import com.infnet.conta.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/contas")
@@ -39,6 +43,16 @@ public class ContaController {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @PostMapping("/admin/atualizar-saldo")
+    public ResponseEntity<Void> atualizarSaldoPorAdmin(@RequestParam Long contaId, @RequestParam double valor) {
+        Boolean success = contaService.atualizarSaldoPorAdmin(contaId, valor);
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }

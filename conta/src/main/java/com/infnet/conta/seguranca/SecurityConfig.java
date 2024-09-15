@@ -3,6 +3,7 @@ package com.infnet.conta.seguranca;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,8 +22,8 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .requestMatchers("/api/contas/criar").permitAll() // Permite acesso ao endpoint de criação de conta
-                .requestMatchers("/api/contas/compra").hasRole("USER")
-                .requestMatchers("/api/contas/**").hasRole("ADMIN")
+                .requestMatchers("/api/contas/compra").hasRole("USER") // Permite usuários regulares atualizarem saldo após compra
+                .requestMatchers("/api/contas/**").hasAnyRole("USER", "ADMIN") // Permite que os usuários e administradores acessem detalhes da conta
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -32,14 +33,9 @@ public class SecurityConfig {
                 .logout()
                 .permitAll()
                 .and()
-                .csrf().disable(); // Desativar CSRF apenas para simplicidade. Em produção, deve ser ativado.
+                .csrf().disable(); // Desativa CSRF para simplificação
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
