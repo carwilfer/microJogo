@@ -39,11 +39,11 @@ public class ContaConsumer {
     public void criarConta(String message) {
         try {
             UsuarioDTO usuarioDTO = objectMapper.readValue(message, UsuarioDTO.class);
-            Long usuarioId = usuarioDTO.getId();
+            Long jogadorId = usuarioDTO.getId();
 
             // Criando ContaDTO a partir do UsuarioDTO
             ContaDTO contaDTO = new ContaDTO();
-            contaDTO.setUsuarioId(usuarioId);
+            contaDTO.setUsuarioId(jogadorId);
             contaDTO.setAtivo(true); // Ou outro valor padrão
             contaDTO.setLimiteDisponivel(1000.0); // Definir limite disponível, se aplicável
 

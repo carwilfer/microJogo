@@ -22,11 +22,7 @@ public class Jogo {
     private double preco;
 
     @Column(nullable = false)
-    private Long empresaId;
+    private Long usuarioId;
     private String cnpj;
-    private String nomeEmpresa;
-
-    @ManyToOne
-    @JoinColumn(name = "biblioteca_id")  // Cria a coluna biblioteca_id na tabela Jogo
-    private Biblioteca biblioteca;
+    private String razaoSocial;
 }

@@ -1,17 +1,19 @@
 package com.infnet.usuario.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.infnet.usuario.dto.AdminDTO;
 import com.infnet.usuario.dto.EmpresaDTO;
 import com.infnet.usuario.dto.JogadorDTO;
 import com.infnet.usuario.dto.UsuarioDTO;
 import com.infnet.usuario.model.Usuario;
 import com.infnet.usuario.producer.RabbitMQProducer;
 import com.infnet.usuario.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,56 +42,43 @@ public class UsuarioService {
         // Definindo o tipo de usuário e dados específicos
         if ("ADMIN".equals(usuarioDTO.getTipoUsuario())) {
             usuario.setTipoUsuario("ADMIN");
-        } else if (usuarioDTO.getCnpj() != null) {
+        } else if ("EMPRESA".equals(usuarioDTO.getTipoUsuario())) {
             usuario.setTipoUsuario("EMPRESA");
-            usuario.setCnpj(usuarioDTO.getCnpj());
-            usuario.setRazaoSocial(usuarioDTO.getRazaoSocial());
-        } else {
+        } else if ("JOGADOR".equals(usuarioDTO.getTipoUsuario())) {
             usuario.setTipoUsuario("JOGADOR");
-            usuario.setCpf(usuarioDTO.getCpf());
+        } else {
+            throw new IllegalArgumentException("Tipo de usuário inválido");
         }
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        // Criação da DTO concreta
-        UsuarioDTO usuarioDTOCriado;
-        if ("ADMIN".equals(usuario.getTipoUsuario())) {
-            usuarioDTOCriado = new AdminDTO(usuario.getNome(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getAtivo());
-        } else if ("EMPRESA".equals(usuario.getTipoUsuario())) {
-            usuarioDTOCriado = new EmpresaDTO(usuario.getNome(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getAtivo(),
-                    usuario.getRazaoSocial(),
-                    usuario.getCnpj());
-        } else {
-            usuarioDTOCriado = new JogadorDTO(usuario.getNome(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getAtivo(),
-                    usuario.getCpf());
-        }
-
-        // Enviar mensagem para o RabbitMQ apenas para EMPRESA e JOGADOR
         try {
-            if ("EMPRESA".equals(usuario.getTipoUsuario())) {
+            if ("ADMIN".equals(usuario.getTipoUsuario())) {
+                UsuarioDTO usuarioDTOCriado = new UsuarioDTO();
+                BeanUtils.copyProperties(usuarioSalvo, usuarioDTOCriado);
+            } else if ("EMPRESA".equals(usuario.getTipoUsuario())) {
+                EmpresaDTO usuarioDTOCriado = new EmpresaDTO();
+                BeanUtils.copyProperties(usuarioSalvo, usuarioDTOCriado);
+                usuarioDTOCriado.setCnpj(usuarioDTO.getCnpj());
+                usuarioDTOCriado.setRazaoSocial(usuarioDTO.getRazaoSocial());
                 rabbitMQProducer.sendMessageToEmpresaQueue(usuarioDTOCriado);
-            } else if ("JOGADOR".equals(usuario.getTipoUsuario())) {
+            } else {
+                JogadorDTO usuarioDTOCriado = new JogadorDTO();
+                usuarioDTOCriado.setCpf(usuarioDTO.getCpf());
+                BeanUtils.copyProperties(usuarioSalvo, usuarioDTOCriado);
                 rabbitMQProducer.sendMessageToJogadorQueue(usuarioDTOCriado);
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Erro ao processar mensagem JSON", e);
         }
-
+        UsuarioDTO usuarioDTOCriado = new UsuarioDTO();
+        BeanUtils.copyProperties(usuarioSalvo, usuarioDTOCriado);
         return usuarioDTOCriado;
     }
 
     public UsuarioDTO encontrarPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         return criarDTO(usuario);
     }
 
@@ -100,18 +89,13 @@ public class UsuarioService {
 
     private UsuarioDTO criarDTO(Usuario usuario) {
         if ("EMPRESA".equals(usuario.getTipoUsuario())) {
-            return new EmpresaDTO(usuario.getNome(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getAtivo(),
-                    usuario.getRazaoSocial(),
-                    usuario.getCnpj());
+            EmpresaDTO empresaDTO = new EmpresaDTO();
+            BeanUtils.copyProperties(usuario, empresaDTO);
+            return empresaDTO;
         } else {
-            return new JogadorDTO(usuario.getNome(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getAtivo(),
-                    usuario.getCpf());
+            JogadorDTO jogadorDTO = new JogadorDTO();
+            BeanUtils.copyProperties(usuario, jogadorDTO);
+            return jogadorDTO;
         }
     }
 
@@ -121,14 +105,14 @@ public class UsuarioService {
 
     public void ativarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         usuario.setAtivo(true);
         usuarioRepository.save(usuario);
     }
 
     public void desativarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         usuario.setAtivo(false);
         usuarioRepository.save(usuario);
     }

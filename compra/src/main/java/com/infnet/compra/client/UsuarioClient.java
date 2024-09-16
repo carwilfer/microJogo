@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "usuario-service", url = "http://localhost:8084")
 public interface UsuarioClient {
 
-    @GetMapping("/usuarios/{id}")
-    ResponseEntity<UsuarioDTO> encontrarPorId(@PathVariable("id") Long id);
-
-    @PutMapping("/usuarios/{id}/saldo")
-    ResponseEntity<Void> atualizarSaldo(@PathVariable("id") Long id, @RequestBody Double novoSaldo);
+    @GetMapping("/api/usuarios/{id}")
+    UsuarioDTO encontrarPorId(@PathVariable("id") Long id);
 }

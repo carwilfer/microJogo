@@ -4,6 +4,7 @@ import com.infnet.jogador.dto.JogadorDTO;
 import com.infnet.jogador.model.Jogador;
 import com.infnet.jogador.repository.JogadorRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +22,21 @@ public class JogadorService {
     }
 
     public JogadorDTO criarJogador(JogadorDTO jogadorDTO) {
-        Jogador jogador = jogadorDTO.toEntity();
+        Jogador jogador = new Jogador();
+        jogador.setUsuarioId(jogadorDTO.getId());
+        BeanUtils.copyProperties(jogadorDTO, jogador,"id");
         Jogador jogadorSalvo = jogadorRepository.save(jogador);
         return new JogadorDTO(jogadorSalvo);
     }
 
     public Optional<JogadorDTO> encontrarPorId(Long id) {
-        return jogadorRepository.findById(id)
+        return jogadorRepository.findByUsuarioId(id)
+                .map(JogadorDTO::new);
+    }
+
+    public Optional<JogadorDTO> encontrarPorCpf(String cpf) {
+        String cpfNormalized = cpf.replaceAll("[^0-9]", "");
+        return jogadorRepository.findByCpf(cpf)
                 .map(JogadorDTO::new);
     }
 

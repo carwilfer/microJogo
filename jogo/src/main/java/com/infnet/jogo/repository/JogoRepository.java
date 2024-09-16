@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface JogoRepository extends JpaRepository<Jogo, Long> {
-    @Query("from Jogo r where r.empresaId = :id")
+    @Query("from Jogo r where r.usuarioId = :id")
     List<Jogo> encontrarEmpresasId(Long id);
 }

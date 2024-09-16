@@ -21,9 +21,9 @@ public class Biblioteca {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long jogadorId;
+    private Long usuarioId;
 
     // Relacionamento com a entidade Jogo
-    @OneToMany(mappedBy = "biblioteca", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     private List<Jogo> jogos = new ArrayList<>();
 }

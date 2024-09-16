@@ -76,9 +76,9 @@ public class BibliotecaService {
     }
 
     // Método para criar uma nova biblioteca
-    public Biblioteca criarBiblioteca(Long jogadorId) {
+    public Biblioteca criarBiblioteca(Long usuarioID) {
         Biblioteca novaBiblioteca = new Biblioteca();
-        novaBiblioteca.setJogadorId(jogadorId);
+        novaBiblioteca.setUsuarioId(usuarioID);
         novaBiblioteca.setJogos(new ArrayList<>());
         return bibliotecaRepository.save(novaBiblioteca);
     }

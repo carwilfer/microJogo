@@ -22,6 +22,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .requestMatchers("/api/contas/criar").permitAll() // Permite acesso ao endpoint de criação de conta
+                .requestMatchers("/api/contas/user/{id}").permitAll()
                 .requestMatchers("/api/contas/compra").hasRole("USER") // Permite usuários regulares atualizarem saldo após compra
                 .requestMatchers("/api/contas/**").hasAnyRole("USER", "ADMIN") // Permite que os usuários e administradores acessem detalhes da conta
                 .anyRequest().authenticated()

@@ -12,11 +12,11 @@ import java.util.List;
 @Setter
 public class ContaDTO {
     private Long id;
+    private Long usuarioId;
+    private Long adminId;
     private String tipoUsuario;
     private double limiteDisponivel;
     private boolean ativo;
-    private Long usuarioId;
-    private String nomeUsuario;
     private List<CompraDTO> compra;
     private double saldo;
     private String cpf;

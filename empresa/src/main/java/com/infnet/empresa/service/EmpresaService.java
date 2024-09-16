@@ -7,6 +7,7 @@ import com.infnet.empresa.repository.EmpresaRepository;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,18 +27,30 @@ public class EmpresaService {
     }
 
     public EmpresaDTO criarEmpresa(EmpresaDTO empresaDTO) {
-        Empresa empresa = empresaDTO.toEntity();
+        Empresa empresa = new Empresa();
+        empresa.setUsuarioId(empresaDTO.getId());
+        BeanUtils.copyProperties(empresaDTO, empresa, "id");
         Empresa empresaSalva = empresaRepository.save(empresa);
         return new EmpresaDTO(empresaSalva);
     }
 
-    public EmpresaDTO encontrarPorId(Long id) {
-        Optional<Empresa> empresa = empresaRepository.findById(id);
-        if (empresa.isPresent()) {
-            return new EmpresaDTO(empresa.get());
-        } else {
-            throw new RuntimeException("Empresa não encontrada");
-        }
+    public Optional<EmpresaDTO> encontrarPorId(Long id) {
+        return empresaRepository.findByUsuarioId(id).map(EmpresaDTO::new);
+    }
+
+//    public EmpresaDTO encontrarPorId(Long id) {
+//        Optional<Empresa> empresa = empresaRepository.findById(id);
+//        if (empresa.isPresent()) {
+//            return new EmpresaDTO(empresa.get());
+//        } else {
+//            throw new RuntimeException("Empresa não encontrada");
+//        }
+//    }
+
+    public Optional<EmpresaDTO> encontrarPorCnpj(String cnpj) {
+        String cnpjNormalizado = cnpj.replace("[^0-9]", "");
+        return empresaRepository.findByCnpj(cnpj)
+                .map(EmpresaDTO::new);
     }
 
     public List<EmpresaDTO> listarTodas() {

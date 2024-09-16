@@ -1,10 +1,10 @@
 package com.infnet.conta.service;
 
 import com.infnet.conta.client.CompraClient;
+import com.infnet.conta.client.EmpresaClient;
+import com.infnet.conta.client.JogadorClient;
 import com.infnet.conta.client.UsuarioClient;
-import com.infnet.conta.dto.CompraDTO;
-import com.infnet.conta.dto.ContaDTO;
-import com.infnet.conta.dto.UsuarioDTO;
+import com.infnet.conta.dto.*;
 import com.infnet.conta.model.Conta;
 import com.infnet.conta.repository.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,14 +36,21 @@ public class ContaService {
 
     public ContaDTO createConta(ContaDTO contaDTO) {
         // Obtém os detalhes do usuário
+        UsuarioDTO admin = usuarioClient.encontrarPorId(contaDTO.getAdminId());
         UsuarioDTO usuario = usuarioClient.encontrarPorId(contaDTO.getUsuarioId());
 
         // Adiciona logs para depuração
-        System.out.println("Usuário recuperado: " + usuario);
+        System.out.println("Admin recuperado: " + admin);
+        System.out.println("usuario recuperado: " + usuario);
 
         // Verifica se o usuário tem permissão para criar uma conta
-        if (usuario == null || !"ADMIN".equals(usuario.getTipoUsuario())) {
+        if (admin == null || !"ADMIN".equals(admin.getTipoUsuario())) {
             System.out.println("Usuário não autorizado a criar contas.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado a criar contas.");
+        }
+
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado.");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado a criar contas.");
         }
 
@@ -48,15 +58,11 @@ public class ContaService {
         conta.setLimiteDisponivel(contaDTO.getLimiteDisponivel());
         conta.setAtivo(contaDTO.isAtivo());
         conta.setUsuarioId(contaDTO.getUsuarioId());
+        conta.setTipoUsuario(usuario.getTipoUsuario());
         conta.setSaldo(contaDTO.getSaldo());
         conta.setCompraIds(new ArrayList<>());
-        Conta savedConta = contaRepository.save(conta);
-        // Criar DTO de resposta
-        ContaDTO responseDTO = convertToDTO(savedConta);
 
-        // Adicionar CPF e CNPJ na resposta
-        responseDTO.setCpf(usuario.getCpf());
-        responseDTO.setCnpj(usuario.getCnpj());
+        Conta savedConta = contaRepository.save(conta);
         return convertToDTO(savedConta);
     }
 
@@ -101,9 +107,11 @@ public class ContaService {
         return true;
     }
 
-    public Conta encontrarPorUsuarioId(Long id) {
-        return contaRepository.encontrarPorUsuarioId(id);
+    public ContaDTO encontrarPorUsuarioId(Long id) {
+        Conta conta = contaRepository.encontrarPorUsuarioId(id);
+        return convertToDTO(conta);
     }
+
 
     private ContaDTO convertToDTO(Conta conta) {
         ContaDTO dto = new ContaDTO();

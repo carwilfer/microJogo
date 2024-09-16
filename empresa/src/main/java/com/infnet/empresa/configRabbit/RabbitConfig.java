@@ -1,6 +1,7 @@
 package com.infnet.empresa.configRabbit;
 
 
+import com.infnet.empresa.consumer.EmpresaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -53,7 +54,15 @@ public class RabbitConfig {
     }
 
     @Bean
-    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, EmpresaListener usuarioListener) {
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(jsonMessageConverter());
+        return factory;
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, EmpresaConsumer usuarioListener) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(QUEUE_NAME);
@@ -71,11 +80,5 @@ public class RabbitConfig {
         });
 
         return container;
-    }
-    @Bean
-    public MessageListenerAdapter listenerAdapter(EmpresaListener empresaListener) {
-        MessageListenerAdapter adapter = new MessageListenerAdapter(empresaListener, "processMessage");
-        adapter.setMessageConverter(jsonMessageConverter());
-        return adapter;
     }
 }

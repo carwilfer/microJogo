@@ -6,15 +6,11 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class EmpresaDTO extends UsuarioDTO {
     private String razaoSocial;
     private String cnpj;
-
-    public EmpresaDTO(String nome, String email, String senha, Boolean ativo, String razaoSocial, String cnpj) {
-        super(nome, email, senha, ativo);
-        this.razaoSocial = razaoSocial;
-        this.cnpj = cnpj;
-    }
 }

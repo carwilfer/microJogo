@@ -32,6 +32,13 @@ public class JogadorController {
         return ResponseEntity.ok(jogadores);
     }
 
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<JogadorDTO> obterJogadorPorCpf(@PathVariable String cpf) {
+        return jogadorService.encontrarPorCpf(cpf)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<JogadorDTO> obterJogador(@PathVariable Long id) {
         return jogadorService.encontrarPorId(id)

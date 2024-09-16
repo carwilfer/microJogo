@@ -29,13 +29,13 @@ public class JogoService {
     @Transactional
     public JogoDTO criarJogo(JogoDTO jogoDTO) {
         try {
-            EmpresaDTO empresaDTO = validarEmpresa(jogoDTO.getEmpresaId());
+            EmpresaDTO empresaDTO = validarEmpresa(jogoDTO.getUsuarioId());
             Jogo jogo = new Jogo();
             BeanUtils.copyProperties(jogoDTO, jogo);
 
             // Atribuindo CNPJ e nome da empresa ao jogo
             jogo.setCnpj(empresaDTO.getCnpj());
-            jogo.setNomeEmpresa(empresaDTO.getRazaoSocial());
+            jogo.setRazaoSocial(empresaDTO.getRazaoSocial());
 
             Jogo novoJogo = jogoRepository.save(jogo);
             JogoDTO novoJogoDTO = new JogoDTO();
@@ -82,14 +82,14 @@ public class JogoService {
     }
 
     public Optional<JogoDTO> atualizarJogo(Long id, JogoDTO jogoDTO) {
-        EmpresaDTO empresaDTO = validarEmpresa(jogoDTO.getEmpresaId());
+        EmpresaDTO empresaDTO = validarEmpresa(jogoDTO.getUsuarioId());
         Jogo jogoExistente = jogoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Jogo não encontrado para o ID: " + id));
 
         // Atualizando as propriedades, incluindo CNPJ e nome da empresa
         BeanUtils.copyProperties(jogoDTO, jogoExistente, "id");
         jogoExistente.setCnpj(empresaDTO.getCnpj());
-        jogoExistente.setNomeEmpresa(empresaDTO.getRazaoSocial());
+        jogoExistente.setRazaoSocial(empresaDTO.getRazaoSocial());
 
         Jogo jogoAtualizado = jogoRepository.save(jogoExistente);
         JogoDTO jogoAtualizadoDTO = new JogoDTO();

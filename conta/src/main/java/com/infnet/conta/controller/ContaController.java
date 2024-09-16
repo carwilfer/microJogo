@@ -36,6 +36,16 @@ public class ContaController {
         }
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<ContaDTO> getContaByUserId(@PathVariable Long id) {
+        ContaDTO contaDTO = contaService.encontrarPorUsuarioId(id);
+        if (contaDTO != null) {
+            return ResponseEntity.ok(contaDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/compra")
     public ResponseEntity<Void> processarCompra(@RequestBody CompraDTO compraDTO, @RequestParam Long usuarioId) {
         Boolean success = contaService.atualizarSaldo(compraDTO, usuarioId);

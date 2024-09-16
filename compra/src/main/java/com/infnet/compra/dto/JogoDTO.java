@@ -1,19 +1,15 @@
-package com.infnet.jogo.dto;
+package com.infnet.compra.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class JogoDTO {
     private Long id;
-    private String nome;
-    private String descricao;
     private double preco;
 
-    @NotNull
-    private Long usuarioId;
-    private String cnpj;
-    private String razaoSocial;
 }

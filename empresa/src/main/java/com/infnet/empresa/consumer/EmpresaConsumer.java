@@ -13,7 +13,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class EmpresaConsumer {
 
@@ -30,7 +29,6 @@ public class EmpresaConsumer {
         LOGGER.info("Mensagem recebida: [{}]", mensagem);
 
         try {
-            // Verifica se a mensagem é um array e extrai o primeiro item se for o caso
             if (mensagem.startsWith("[") && mensagem.endsWith("]")) {
                 mensagem = mensagem.substring(1, mensagem.length() - 1);
             }

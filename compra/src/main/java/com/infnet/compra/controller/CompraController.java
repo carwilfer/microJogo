@@ -1,6 +1,7 @@
 package com.infnet.compra.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.infnet.compra.dto.CompraDTO;
 import com.infnet.compra.model.Compra;
 import com.infnet.compra.service.CompraService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class CompraController {
     private CompraService compraService;
 
     @PostMapping("/criar")
-    public ResponseEntity<Compra> criarCompra(@RequestBody Compra compra) {
+    public ResponseEntity<Compra> criarCompra(@RequestBody CompraDTO compra) {
         try {
             Compra novaCompra = compraService.criarCompra(compra);
             return ResponseEntity.ok(novaCompra);

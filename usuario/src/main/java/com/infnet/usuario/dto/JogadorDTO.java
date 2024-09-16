@@ -12,11 +12,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class JogadorDTO extends UsuarioDTO {
     private String cpf;
 
-    public JogadorDTO(String nome, String email, String senha, Boolean ativo, String cpf) {
-        super(nome, email, senha, ativo);
-        this.cpf = cpf;
-    }
 }

@@ -23,6 +23,9 @@ public class Jogador {
     private Long id;
 
     @NotNull
+    private Long usuarioId;
+
+    @NotNull
     @Size(min = 2, max = 50)
     @Column(name = "nome")
     private String nome;

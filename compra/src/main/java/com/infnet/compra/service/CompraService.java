@@ -1,13 +1,17 @@
 package com.infnet.compra.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.infnet.compra.client.ContaClient;
 import com.infnet.compra.client.JogoClient;
 import com.infnet.compra.client.UsuarioClient;
 import com.infnet.compra.dto.CompraDTO;
+import com.infnet.compra.dto.ContaDTO;
+import com.infnet.compra.dto.JogoDTO;
 import com.infnet.compra.dto.UsuarioDTO;
 import com.infnet.compra.model.Compra;
 import com.infnet.compra.producer.CompraProducer;
 import com.infnet.compra.repository.CompraRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,35 +34,39 @@ public class CompraService {
 
     @Autowired
     private JogoClient jogoClient;
+    @Autowired
+    private ContaClient contaClient;
 
-    public Compra criarCompra(Compra compra) throws JsonProcessingException {
+    public Compra criarCompra(CompraDTO compraDTO) throws JsonProcessingException {
         // Verifique o usuário e o saldo
-        ResponseEntity<UsuarioDTO> usuarioResponse = usuarioClient.encontrarPorId(compra.getUsuarioId());
-        UsuarioDTO usuario = usuarioResponse.getBody();
+        UsuarioDTO usuario = usuarioClient.encontrarPorId(compraDTO.getUsuarioId());
         if (usuario == null) {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
 
+        ContaDTO contaDTO = contaClient.encontrarPorId(compraDTO.getUsuarioId());
+        if (contaDTO == null) {
+            throw new IllegalArgumentException("Jogo não encontrado");
+        }
+
         // Verifique o jogo
-        ResponseEntity<CompraDTO> jogoResponse = jogoClient.encontrarPorId(compra.getJogoId());
-        CompraDTO jogo = jogoResponse.getBody();
-        if (jogo == null) {
+        JogoDTO jogoDTO = jogoClient.encontrarPorId(compraDTO.getJogoId());
+        if (jogoDTO == null) {
             throw new IllegalArgumentException("Jogo não encontrado");
         }
 
         // Cria a compra
+        Compra compra = new Compra();
+        compra.setValorTotal(jogoDTO.getPreco() * compraDTO.getQuantidade());
         compra.setData(LocalDateTime.now());
-        Compra novaCompra = compraRepository.save(compra);
 
-        // Atualizar saldo do usuário
-        Double saldoAtual = usuario.getSaldo();
-        if (saldoAtual < novaCompra.getValorTotal()) {
-            throw new IllegalArgumentException("Saldo insuficiente");
+        if(compra.getValorTotal() > contaDTO.getSaldo()) {
+            throw new IllegalArgumentException("Jogo não encontrado");
         }
-        usuario.setSaldo(saldoAtual - novaCompra.getValorTotal());
 
-        // Atualizar o saldo do usuário no serviço de usuário
-        usuarioClient.atualizarSaldo(usuario.getId(), usuario.getSaldo());
+        BeanUtils.copyProperties(compraDTO,compra,"data");
+
+        Compra novaCompra = compraRepository.save(compra);
 
         // Enviar evento para adicionar o jogo à biblioteca
         compraProducer.sendMessageToBibliotecaQueue(novaCompra);

@@ -40,15 +40,6 @@ public class Usuario {
     @Column(name = "ativo")
     private Boolean ativo = true;
 
-    @Column(name = "razao_social")
-    private String razaoSocial;
-
-    @Column(name = "cnpj")
-    private String cnpj;
-
-    @Column(name = "cpf")
-    private String cpf;
-
     @Column(name = "tipo_usuario")
     private String tipoUsuario; // Pode ser 'EMPRESA', 'JOGADOR', 'ADMIN'
 }

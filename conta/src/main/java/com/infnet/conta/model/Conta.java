@@ -1,6 +1,8 @@
 package com.infnet.conta.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,7 @@ public class Conta {
     @Column(name = "tipo_usuario")
     private String tipoUsuario;
 
+    // Adicione de volta o campo usuarioId
     private Long usuarioId;
 
     @ElementCollection
@@ -34,5 +37,4 @@ public class Conta {
     @ElementCollection
     private List<Long> compraIds;
 
-    
 }

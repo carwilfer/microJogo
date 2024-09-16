@@ -1,6 +1,5 @@
 package com.infnet.empresa.controller;
 
-import com.infnet.empresa.consumer.EmpresaConsumer;
 import com.infnet.empresa.dto.EmpresaDTO;
 import com.infnet.empresa.service.EmpresaService;
 import jakarta.validation.Valid;
@@ -41,8 +40,14 @@ public class EmpresaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmpresaDTO> obterEmpresa(@PathVariable Long id) {
-        EmpresaDTO empresa = empresaService.encontrarPorId(id);
-        return ResponseEntity.ok(empresa);
+        return empresaService.encontrarPorId(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/cnpj/{cnpj}")
+    public ResponseEntity<EmpresaDTO> obterEmpresaPorCnpj(@PathVariable String cnpj) {
+        return empresaService.encontrarPorCnpj(cnpj)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
