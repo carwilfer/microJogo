@@ -26,30 +26,16 @@ public class ContaConsumer {
     @RabbitListener(queues = "conta_Queue")
     public void receiveMessage(String message) {
         try {
+            // Deserializando para CompraDTO
             CompraDTO compraDTO = objectMapper.readValue(message, CompraDTO.class);
             Long usuarioId = compraDTO.getUsuarioId();
-            contaService.atualizarSaldo(compraDTO, usuarioId);
-        } catch (JsonProcessingException e) {
-            log.error("Erro ao processar mensagem JSON: {}", message, e);
+            System.out.println(message);
+            Boolean success = contaService.atualizarSaldo(compraDTO, usuarioId);
+            if (!success) {
+                log.warn("Saldo insuficiente para a compra: {}", compraDTO);
+            }
         } catch (Exception e) {
-            log.error("Erro ao atualizar saldo", e);
-        }
-    }
-    @RabbitListener(queues = "conta_CriarQueue")
-    public void criarConta(String message) {
-        try {
-            UsuarioDTO usuarioDTO = objectMapper.readValue(message, UsuarioDTO.class);
-            Long jogadorId = usuarioDTO.getId();
-
-            // Criando ContaDTO a partir do UsuarioDTO
-            ContaDTO contaDTO = new ContaDTO();
-            contaDTO.setUsuarioId(jogadorId);
-            contaDTO.setAtivo(true); // Ou outro valor padrão
-            contaDTO.setLimiteDisponivel(1000.0); // Definir limite disponível, se aplicável
-
-            contaService.createConta(contaDTO); // Chamar o método com ContaDTO
-        } catch (JsonProcessingException e) {
-            log.error("Erro ao processar mensagem JSON: {}", message, e);
+            log.error("Erro ao processar mensagem de conta: {}", message, e);
         }
     }
 }

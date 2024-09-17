@@ -59,6 +59,7 @@ public class CompraService {
         Compra compra = new Compra();
         compra.setValorTotal(jogoDTO.getPreco() * compraDTO.getQuantidade());
         compra.setData(LocalDateTime.now());
+        compra.setContaId(contaDTO.getId());
 
         if(compra.getValorTotal() > contaDTO.getSaldo()) {
             throw new IllegalArgumentException("Jogo não encontrado");

@@ -22,10 +22,7 @@ public class Compra {
     private LocalDateTime data;
     private Double valorTotal;
     private int quantidade;
-
     private Long usuarioId;
-
     private Long jogoId;
-
     private Long contaId;
 }

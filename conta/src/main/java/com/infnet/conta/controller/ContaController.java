@@ -19,7 +19,6 @@ public class ContaController {
     @Autowired
     private ContaService contaService;
 
-
     @PostMapping("/criar")
     public ResponseEntity<ContaDTO> createConta(@RequestBody ContaDTO contaDTO) {
         ContaDTO createdConta = contaService.createConta(contaDTO);

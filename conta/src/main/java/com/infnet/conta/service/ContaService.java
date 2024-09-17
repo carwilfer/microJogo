@@ -39,21 +39,16 @@ public class ContaService {
         UsuarioDTO admin = usuarioClient.encontrarPorId(contaDTO.getAdminId());
         UsuarioDTO usuario = usuarioClient.encontrarPorId(contaDTO.getUsuarioId());
 
-        // Adiciona logs para depuração
-        System.out.println("Admin recuperado: " + admin);
-        System.out.println("usuario recuperado: " + usuario);
-
-        // Verifica se o usuário tem permissão para criar uma conta
+        // Verifica se o admin tem permissão para criar conta
         if (admin == null || !"ADMIN".equals(admin.getTipoUsuario())) {
-            System.out.println("Usuário não autorizado a criar contas.");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado a criar contas.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado.");
         }
 
         if (usuario == null) {
-            System.out.println("Usuário não encontrado.");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado a criar contas.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não encontrado.");
         }
 
+        // Criação da conta
         Conta conta = new Conta();
         conta.setLimiteDisponivel(contaDTO.getLimiteDisponivel());
         conta.setAtivo(contaDTO.isAtivo());
@@ -62,47 +57,42 @@ public class ContaService {
         conta.setSaldo(contaDTO.getSaldo());
         conta.setCompraIds(new ArrayList<>());
 
+        // Salva a conta no repositório
         Conta savedConta = contaRepository.save(conta);
         return convertToDTO(savedConta);
     }
 
     public ContaDTO getContaById(Long id) {
-        Optional<Conta> conta = contaRepository.findById(id);
-        return conta.map(this::convertToDTO).orElse(null);
+        return contaRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElse(null);
     }
 
     public Boolean atualizarSaldo(CompraDTO compraDTO, Long usuarioId) {
-        UsuarioDTO usuario = usuarioClient.encontrarPorId(usuarioId);
+        Conta conta = contaRepository.encontrarPorUsuarioId(usuarioId);
+        if (conta == null) {
+            throw new IllegalStateException("Conta não encontrada.");
+        }
 
-        if (usuario == null || !"ADMIN".equals(usuario.getTipoUsuario())) {
+        double valorCompra = compraDTO.getValorTotal();
+        if (conta.getSaldo() < valorCompra) {
             return false;
         }
 
-        Conta conta = contaRepository.encontrarPorUsuarioId(compraDTO.getUsuarioId());
-
-        if (conta == null) {
-            return false; // Conta não encontrada
-        }
-
-        double novoSaldo = conta.getSaldo() - compraDTO.getValorTotal();
-        double novoLimiteDisponivel = conta.getLimiteDisponivel() + compraDTO.getValorTotal();
-        conta.setSaldo(novoSaldo);
-        conta.setLimiteDisponivel(novoLimiteDisponivel);
-        conta.getCompraIds().add(compraDTO.getJogoId()); // Usar o jogoId para a lista de compras
+        conta.setSaldo(conta.getSaldo() - valorCompra);
         contaRepository.save(conta);
         return true;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public Boolean atualizarSaldoPorAdmin(Long contaId, double valor) {
-        Conta conta = contaRepository.findById(contaId).orElse(null);
+        Conta conta = contaRepository.findById(contaId)
+                .orElseThrow(() -> new IllegalStateException("Conta não encontrada"));
 
-        if (conta == null) {
+        if (!"ADMIN".equals(conta.getTipoUsuario())) {
             return false;
         }
 
-        double novoSaldo = conta.getSaldo() + valor;
-        conta.setSaldo(novoSaldo);
+        conta.setSaldo(conta.getSaldo() + valor);
         contaRepository.save(conta);
         return true;
     }
@@ -111,7 +101,6 @@ public class ContaService {
         Conta conta = contaRepository.encontrarPorUsuarioId(id);
         return convertToDTO(conta);
     }
-
 
     private ContaDTO convertToDTO(Conta conta) {
         ContaDTO dto = new ContaDTO();

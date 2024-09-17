@@ -26,7 +26,7 @@ public class CompraProducer {
     public void sendMessageToContaQueue(Object message) throws JsonProcessingException {
         String messageJson = objectMapper.writeValueAsString(message);
         LOGGER.info("Enviando mensagem para ContaQueue [{}]", messageJson);
-        rabbitTemplate.convertAndSend(RabbitConfig.CONTA_EXCHANGE_NAME, RabbitConfig.CONTA_EXCHANGE_NAME, messageJson);
+        rabbitTemplate.convertAndSend(RabbitConfig.CONTA_EXCHANGE_NAME, RabbitConfig.CONTA_ROUTING_KEY, messageJson);
     }
 
     public void sendMessageToBibliotecaQueue(Object message) throws JsonProcessingException {

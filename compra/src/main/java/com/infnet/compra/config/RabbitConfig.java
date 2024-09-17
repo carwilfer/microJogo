@@ -21,7 +21,6 @@ public class RabbitConfig {
     public static final String BIBLIOTECA_ROUTING_KEY = "biblioteca.#";
 
     public static final String CONTA_QUEUE_NAME = "conta_Queue";
-    //public static final String CONTA_QUEUE_NAME = "conta_CriarQueue";
     public static final String CONTA_EXCHANGE_NAME = "contaExchange";
     public static final String CONTA_ROUTING_KEY = "conta.#";
 
