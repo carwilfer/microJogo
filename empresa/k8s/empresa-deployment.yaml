@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: empresa-service-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: empresa-service
+  template:
+    metadata:
+      labels:
+        app: empresa-service
+    spec:
+      containers:
+        - name: empresa-service
+          image: empresa-service:latest
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-service:5432/empresa_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: empresa_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: empresa_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: empresa-service
+spec:
+  selector:
+    app: empresa-service
+  ports:
+    - protocol: TCP
+      port: 8085
+      targetPort: 8085
+  type: LoadBalancer

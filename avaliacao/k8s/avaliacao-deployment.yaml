@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avaliacao-service
+  labels:
+    app: avaliacao
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: avaliacao
+  template:
+    metadata:
+      labels:
+        app: avaliacao
+    spec:
+      containers:
+        - name: avaliacao-service
+          image: avaliacao-service:latest
+          ports:
+            - containerPort: 8090
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://avaliacao-postgres:5432/avaliacao_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_RABBITMQ_HOST
+              value: avaliacao-rabbitmq
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: avaliacao-service
+spec:
+  selector:
+    app: avaliacao
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+  type: LoadBalancer

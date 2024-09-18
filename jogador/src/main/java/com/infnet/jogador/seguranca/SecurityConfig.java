@@ -17,8 +17,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/jogadores/**", "/api/jogos/**", "/api/contas/**")
-                        .permitAll()
+                        .requestMatchers("/api/jogadores/**", "/api/jogos/**", "/api/contas/**").permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions().sameOrigin())
                 .formLogin(formLogin -> formLogin.permitAll())

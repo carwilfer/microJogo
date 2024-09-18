@@ -1,6 +1,7 @@
 package com.infnet.jogador.controller;
 
 import com.infnet.jogador.dto.JogadorDTO;
+import com.infnet.jogador.model.Jogador;
 import com.infnet.jogador.service.JogadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,12 @@ public class JogadorController {
 
     @PostMapping("/criar")
     public ResponseEntity<JogadorDTO> criarJogador(@RequestBody JogadorDTO jogadorDTO) {
+        JogadorDTO novoJogador = jogadorService.criarJogador(jogadorDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoJogador);
+    }
+
+    @PostMapping("/criarSemUserId")
+    public ResponseEntity<JogadorDTO> criarJogadorSemUserId(@RequestBody JogadorDTO jogadorDTO) {
         JogadorDTO novoJogador = jogadorService.criarJogador(jogadorDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoJogador);
     }

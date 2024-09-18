@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jogo-service
+  labels:
+    app: jogo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jogo
+  template:
+    metadata:
+      labels:
+        app: jogo
+    spec:
+      containers:
+        - name: jogo-service
+          image: jogo-service:latest
+          ports:
+            - containerPort: 8087
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://jogo-postgres:5432/jogo_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_RABBITMQ_HOST
+              value: jogo-rabbitmq
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jogo-service
+spec:
+  selector:
+    app: jogo
+  ports:
+    - protocol: TCP
+      port: 8087
+      targetPort: 8087
+  type: LoadBalancer

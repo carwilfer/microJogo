@@ -29,6 +29,21 @@ public class JogadorService {
         return new JogadorDTO(jogadorSalvo);
     }
 
+    public JogadorDTO criarJogadorSemUserId(JogadorDTO jogadorDTO) {
+        Jogador jogador = new Jogador();
+
+        // Configurar o Jogador com ou sem usuarioId
+        jogador.setUsuarioId(jogadorDTO.getId() != null ? jogadorDTO.getId() : null);
+        jogador.setNome(jogadorDTO.getNome());
+        jogador.setEmail(jogadorDTO.getEmail());
+        jogador.setSenha(jogadorDTO.getSenha());
+        jogador.setAtivo(jogadorDTO.isAtivo());
+        jogador.setCpf(jogadorDTO.getCpf());
+
+        Jogador jogadorSalvo = jogadorRepository.save(jogador);
+        return new JogadorDTO(jogadorSalvo);
+    }
+
     public Optional<JogadorDTO> encontrarPorId(Long id) {
         return jogadorRepository.findByUsuarioId(id)
                 .map(JogadorDTO::new);

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usuario-service
+  labels:
+    app: usuario-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: usuario-service
+  template:
+    metadata:
+      labels:
+        app: usuario-service
+    spec:
+      containers:
+        - name: usuario-service
+          image: carwilfer/usuario-service:latest
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://usuario-postgres:5432/usuario_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_RABBITMQ_HOST
+              value: usuario-rabbitmq
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: usuario-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8084
+      targetPort: 8084
+  selector:
+    app: usuario-service
