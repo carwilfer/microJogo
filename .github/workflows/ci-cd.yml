@@ -25,16 +25,19 @@ jobs:
 
       - name: Build and Package all microservices
         run: |
-          # List of microservices directories
+          # Lista de diretórios dos microsserviços
           services=(avaliacao compra conta empresa jogador jogo usuario)
 
-          # Build each microservice
+          # Construa cada microsserviço
           for service in "${services[@]}"; do
             echo "Building microservice: $service"
             cd ./Micro/$service
-            chmod +x ./mvnw
-            chmod +x ./build.sh
-            ./build.sh
+            if [ -f "pom.xml" ]; then
+              chmod +x ./mvnw || true
+              mvn -B package
+            else
+              echo "No pom.xml found in $service directory."
+            fi
             cd ../../
           done
 
@@ -66,7 +69,6 @@ jobs:
       - name: Deploy to server
         run: |
           # Comandos para fazer o deploy dos JARs para o servidor
-          # Isso pode envolver copiar os JARs para o servidor e reiniciar as aplicações
           for file in $(find Micro -name "*.jar"); do
             echo "Deploying $file"
             scp $file user@server:/path/to/deploy/
