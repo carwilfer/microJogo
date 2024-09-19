@@ -10,5 +10,5 @@ echo "Construindo e enviando imagens Docker..."
 # Construir e enviar imagem Docker do microsserviço jogador
 echo "Construindo imagem Docker do serviço jogador..."
 docker build -t jogador:latest .
-docker tag jogador-service:latest carwilfer/jogador-service:latest
+docker tag jogador:latest carwilfer/jogador-service:latest
 docker push carwilfer/jogador-service:latest
