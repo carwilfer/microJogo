@@ -1,7 +1,9 @@
 package com.infnet.usuario.controller;
 
+import com.infnet.usuario.Audit.UsuarioAuditService;
 import com.infnet.usuario.configRabbit.RabbitConfig;
 import com.infnet.usuario.dto.UsuarioDTO;
+import com.infnet.usuario.model.Usuario;
 import com.infnet.usuario.service.UsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +22,12 @@ public class UsuarioController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioController.class);
     private final UsuarioService usuarioService;
+    private final UsuarioAuditService usuarioAuditService;
 
     @Autowired
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, UsuarioAuditService usuarioAuditService) {
         this.usuarioService = usuarioService;
+        this.usuarioAuditService = usuarioAuditService;
     }
 
     @PostMapping("/criar")
@@ -71,5 +75,11 @@ public class UsuarioController {
     public ResponseEntity<Void> desativarUsuario(@PathVariable Long id) {
         usuarioService.desativarUsuario(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<List<Usuario>> obterHistorico(@PathVariable Long id) {
+        List<Usuario> historico = usuarioAuditService.getRevisoes(id);
+        return ResponseEntity.ok(historico);
     }
 }
