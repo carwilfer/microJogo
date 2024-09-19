@@ -1,57 +1,5 @@
 #!/bin/bash
 
-# Passo 1: Build dos projetos Maven para os microsserviços
-echo "Executando mvn clean package para os microsserviços..."
-
-# Compilar todos os serviços necessários
-mvn clean package -DskipTests
-
-# Passo 2: Construir e enviar as imagens Docker para cada microsserviço
-echo "Construindo e enviando imagens Docker..."
-
-# Construir e enviar imagem Docker do microsserviço usuario
-echo "Construindo imagem Docker do serviço usuario..."
-docker build -t usuario:latest .
-docker tag usuario-service:latest carwilfer/usuario-service:latest
-docker push carwilfer/usuario-service:latest
-
-# Construir e enviar imagem Docker do microsserviço avaliacao
-echo "Construindo imagem Docker do serviço avaliacao..."
-docker build -t avaliacao:latest .
-docker tag avaliacao-service:latest carwilfer/avaliacao-service:latest
-docker push carwilfer/avaliacao-service:latest
-
-
-# Construir e enviar imagem Docker do microsserviço compra
-echo "Construindo imagem Docker do serviço compra..."
-docker build -t compra:latest .
-docker tag compra-service:latest carwilfer/compra-service:latest
-docker push carwilfer/compra-service:latest
-
-# Construir e enviar imagem Docker do microsserviço conta
-echo "Construindo imagem Docker do serviço conta..."
-docker build -t conta:latest .
-docker tag conta-service:latest carwilfer/conta-service:latest
-docker push carwilfer/conta-service:latest
-
-# Construir e enviar imagem Docker do microsserviço empresa
-echo "Construindo imagem Docker do serviço empresa..."
-docker build -t empresa:latest .
-docker tag empresa-service:latest carwilfer/empresa-service:latest
-docker push carwilfer/empresa-service:latest
-
-# Construir e enviar imagem Docker do microsserviço jogador
-echo "Construindo imagem Docker do serviço jogador..."
-docker build -t jogador:latest .
-docker tag jogador-service:latest carwilfer/jogador-service:latest
-docker push carwilfer/jogador-service:latest
-
-# Construir e enviar imagem Docker do microsserviço jogo
-echo "Construindo imagem Docker do serviço jogo..."
-docker build -t jogo:latest .
-docker tag jogo-service:latest carwilfer/jogo-service:latest
-docker push carwilfer/jogo-service:latest
-
 # Passo 3: Aplicar as configurações para os componentes de infraestrutura necessários antes dos microsserviços
 echo "Aplicando configurações para Fluentd, Elasticsearch, Kibana..."
 
@@ -80,11 +28,17 @@ sleep 30
 echo "Aplicando os microsserviços..."
 
 kubectl apply -f avaliacao-deployment.yaml
+sleep 10
 kubectl apply -f compra-deployment.yaml
+sleep 10
 kubectl apply -f conta-deployment.yaml
+sleep 10
 kubectl apply -f empresa-deployment.yaml
+sleep 10
 kubectl apply -f jogador-deployment.yaml
+sleep 10
 kubectl apply -f jogo-deployment.yaml
+sleep 10
 kubectl apply -f usuario-deployment.yaml
 
 # Passo 6: Verificar o status de todos os pods após o deploy
