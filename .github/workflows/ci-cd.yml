@@ -64,21 +64,4 @@ jobs:
             jogo/target/*.jar
             usuario/target/*.jar
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download JAR artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: all-microservices
-
-      - name: Deploy to server
-        run: |
-          # Comandos para fazer o deploy dos JARs para o servidor
-          # Isso pode envolver copiar os JARs para o servidor e reiniciar as aplicações
-          scp avaliacao/target/*.jar compra/target/*.jar conta/target/*.jar empresa/target/*.jar jogador/target/*.jar jogo/target/*.jar usuario/target/*.jar user@server:/path/to/deploy/
-          ssh user@server 'sudo systemctl restart myapp'
+  
