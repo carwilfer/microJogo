@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -74,6 +75,15 @@ public class UsuarioService {
         UsuarioDTO usuarioDTOCriado = new UsuarioDTO();
         BeanUtils.copyProperties(usuarioSalvo, usuarioDTOCriado);
         return usuarioDTOCriado;
+    }
+
+    public List<UsuarioDTO> criarUsuarios(List<UsuarioDTO> usuariosDTO) {
+        List<UsuarioDTO> usuariosCriados = new ArrayList<>();
+        for (UsuarioDTO usuarioDTO : usuariosDTO) {
+            UsuarioDTO usuarioCriado = criarUsuario(usuarioDTO);
+            usuariosCriados.add(usuarioCriado);
+        }
+        return usuariosCriados;
     }
 
     public UsuarioDTO encontrarPorId(Long id) {

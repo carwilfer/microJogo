@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,6 +31,16 @@ public class UsuarioController {
         LOGGER.info("Criando usuário: {}", usuarioDTO.getEmail());
         UsuarioDTO usuarioCriado = usuarioService.criarUsuario(usuarioDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCriado);
+    }
+
+    @PostMapping("/criarLista")
+    public ResponseEntity<List<UsuarioDTO>> criarUsuarios(@RequestBody List<UsuarioDTO> usuariosDTO) {
+        List<UsuarioDTO> usuariosCriados = new ArrayList<>();
+        for (UsuarioDTO usuarioDTO : usuariosDTO) {
+            UsuarioDTO usuarioCriado = usuarioService.criarUsuario(usuarioDTO);
+            usuariosCriados.add(usuarioCriado);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuariosCriados);
     }
 
     @GetMapping("/listar")

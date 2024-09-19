@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-deployment
+  name: postgres
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: postgres
@@ -15,24 +14,22 @@ spec:
       containers:
         - name: postgres
           image: postgres:14
-          ports:
-            - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: "empresa_db"
+              value: usuario_db
             - name: POSTGRES_USER
-              value: "empresa_user"
+              value: postgres
             - name: POSTGRES_PASSWORD
-              value: "empresa_password"
+              value: postgres
+          ports:
+            - containerPort: 5432
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
 spec:
+  ports:
+    - port: 5432
   selector:
     app: postgres
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
