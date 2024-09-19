@@ -23,19 +23,19 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Package all modules
+      - name: Build and Package all microservices
         run: |
-          # List of modules
-          modules=(avaliacao compra conta empresa jogador jogo usuario)
+          # List of microservices directories
+          services=(avaliacao compra conta empresa jogador jogo usuario)
 
-          # Build each module
-          for module in "${modules[@]}"; do
-            echo "Building module: $module"
-            cd $module
+          # Build each microservice
+          for service in "${services[@]}"; do
+            echo "Building microservice: $service"
+            cd ./Micro/$service
             chmod +x ./mvnw
             chmod +x ./build.sh
             ./build.sh
-            cd ..
+            cd ../../
           done
 
       - name: Upload JAR artifacts
@@ -43,13 +43,13 @@ jobs:
         with:
           name: app
           path: |
-            avaliacao/target/*.jar
-            compra/target/*.jar
-            conta/target/*.jar
-            empresa/target/*.jar
-            jogador/target/*.jar
-            jogo/target/*.jar
-            usuario/target/*.jar
+            Micro/avaliacao/target/*.jar
+            Micro/compra/target/*.jar
+            Micro/conta/target/*.jar
+            Micro/empresa/target/*.jar
+            Micro/jogador/target/*.jar
+            Micro/jogo/target/*.jar
+            Micro/usuario/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -67,7 +67,7 @@ jobs:
         run: |
           # Comandos para fazer o deploy dos JARs para o servidor
           # Isso pode envolver copiar os JARs para o servidor e reiniciar as aplicações
-          for file in $(find . -name "*.jar"); do
+          for file in $(find Micro -name "*.jar"); do
             echo "Deploying $file"
             scp $file user@server:/path/to/deploy/
           done
