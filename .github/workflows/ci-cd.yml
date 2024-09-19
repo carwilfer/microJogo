@@ -3,10 +3,10 @@ name: CI/CD
 on:
   push:
     branches:
-      - master  # ou o nome do branch principal do seu repositório
+      - main  # Atualize para o nome do branch principal, se necessário
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
