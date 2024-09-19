@@ -6,9 +6,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@EnableJpaAuditing(auditorAwareRef = "auditoriaListener")
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class AppConfig {
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

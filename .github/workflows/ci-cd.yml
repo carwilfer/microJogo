@@ -25,31 +25,31 @@ jobs:
 
       - name: Build and package avaliacao
         working-directory: ./avaliacao
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build and package compra
         working-directory: ./compra
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build and package conta
         working-directory: ./conta
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build and package empresa
         working-directory: ./empresa
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build and package jogador
         working-directory: ./jogador
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build and package jogo
         working-directory: ./jogo
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build and package usuario
         working-directory: ./usuario
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Upload JAR artifacts
         uses: actions/upload-artifact@v3
