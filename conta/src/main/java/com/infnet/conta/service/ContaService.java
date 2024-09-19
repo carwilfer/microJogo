@@ -59,7 +59,10 @@ public class ContaService {
 
         // Salva a conta no repositório
         Conta savedConta = contaRepository.save(conta);
-        return convertToDTO(savedConta);
+        ContaDTO savedContaDTO =  convertToDTO(savedConta);
+        savedContaDTO.setTipoUsuario(admin.getTipoUsuario());
+        savedContaDTO.setAdminId(admin.getId());
+        return savedContaDTO;
     }
 
     public ContaDTO getContaById(Long id) {

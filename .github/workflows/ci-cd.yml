@@ -64,4 +64,3 @@ jobs:
             jogo/target/*.jar
             usuario/target/*.jar
 
-  

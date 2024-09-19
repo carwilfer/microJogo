@@ -19,6 +19,4 @@ public class ContaDTO {
     private boolean ativo;
     private List<CompraDTO> compra;
     private double saldo;
-    private String cpf;
-    private String cnpj;
 }
