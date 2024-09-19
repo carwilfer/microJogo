@@ -21,64 +21,35 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: maven
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Build and Package all modules
+        run: |
+          # List of modules
+          modules=(avaliacao compra conta empresa jogador jogo usuario)
 
-      - name: Run tests
-        run: mvn test
+          # Build each module
+          for module in "${modules[@]}"; do
+            echo "Building module: $module"
+            cd $module
+            chmod +x ./mvnw
+            chmod +x ./build.sh
+            ./build.sh
+            cd ..
+          done
 
-      - name: Package the application
-        run: mvn package
-
-      - name: Upload JAR artifact
+      - name: Upload JAR artifacts
         uses: actions/upload-artifact@v3
         with:
           name: app
-          path: target/*.jar
-
-      - name: Run avaliacao build
-        run: |
-          cd ./avaliacao
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh
-      - name: Run compra build
-        run: |
-          cd ./compra
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh
-      - name: Run conta build
-        run: |
-          cd ./conta
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh
-      - name: Run empresa build
-        run: |
-          cd ./empresa
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh
-      - name: Run jogador build
-        run: |
-          cd ./jogador
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh
-      - name: Run jogo build
-        run: |
-          cd ./jogo
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh
-      - name: Run usuario build
-        run: |
-          cd ./usuario
-          chmod +x ./mvnw
-          chmod +x ./build.sh
-          ./build.sh          
+          path: |
+            avaliacao/target/*.jar
+            compra/target/*.jar
+            conta/target/*.jar
+            empresa/target/*.jar
+            jogador/target/*.jar
+            jogo/target/*.jar
+            usuario/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -87,14 +58,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download JAR artifact
+      - name: Download JAR artifacts
         uses: actions/download-artifact@v3
         with:
           name: app
 
       - name: Deploy to server
         run: |
-          # Comandos para fazer o deploy do JAR para o servidor
-          # Isso pode envolver copiar o JAR para o servidor e reiniciar a aplicação
-          scp target/*.jar user@server:/path/to/deploy/
+          # Comandos para fazer o deploy dos JARs para o servidor
+          # Isso pode envolver copiar os JARs para o servidor e reiniciar as aplicações
+          for file in $(find . -name "*.jar"); do
+            echo "Deploying $file"
+            scp $file user@server:/path/to/deploy/
+          done
           ssh user@server 'sudo systemctl restart myapp'
