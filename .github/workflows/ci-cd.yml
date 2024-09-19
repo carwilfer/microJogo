@@ -3,7 +3,7 @@ name: CI-CD
 on:
   push:
     branches:
-      - master  # Atualize para o nome do branch principal, se necessário
+      - master
   pull_request:
     branches:
       - master
@@ -36,6 +36,49 @@ jobs:
         with:
           name: app
           path: target/*.jar
+
+      - name: Run avaliacao build
+        run: |
+          cd ./avaliacao
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Run compra build
+        run: |
+          cd ./compra
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Run conta build
+        run: |
+          cd ./conta
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Run empresa build
+        run: |
+          cd ./empresa
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Run jogador build
+        run: |
+          cd ./jogador
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Run jogo build
+        run: |
+          cd ./jogo
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Run usuario build
+        run: |
+          cd ./usuario
+          chmod +x ./mvnw
+          chmod +x ./build.sh
+          ./build.sh          
 
   deploy:
     runs-on: ubuntu-latest
