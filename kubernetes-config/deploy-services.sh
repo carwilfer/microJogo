@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Passo 3: Aplicar as configurações para os componentes de infraestrutura necessários antes dos microsserviços
 echo "Aplicando configurações para Fluentd, Elasticsearch, Kibana..."
 
