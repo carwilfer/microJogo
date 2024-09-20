@@ -5,7 +5,7 @@ metadata:
   labels:
     app: avaliacao
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: avaliacao
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: avaliacao-service
-          image: avaliacao-service:latest
+          image: carwilfer/avaliacao-service:latest
           ports:
             - containerPort: 8090
           env:
@@ -42,4 +42,5 @@ spec:
     - protocol: TCP
       port: 8090
       targetPort: 8090
+      nodePort: 30500
   type: LoadBalancer

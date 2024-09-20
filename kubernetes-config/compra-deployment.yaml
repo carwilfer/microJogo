@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: compra-service
-          image: compra-service:latest
+          image: carwilfer/compra-service:latest
           ports:
             - containerPort: 8088
           env:
@@ -42,4 +42,5 @@ spec:
     - protocol: TCP
       port: 8088
       targetPort: 8088
+      nodePort: 30501
   type: LoadBalancer

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: empresa-service
-          image: empresa-service:latest
+          image: carwilfer/empresa-service:latest
           ports:
             - containerPort: 8085
           env:
@@ -36,4 +36,5 @@ spec:
     - protocol: TCP
       port: 8085
       targetPort: 8085
+      nodePort: 30503
   type: LoadBalancer

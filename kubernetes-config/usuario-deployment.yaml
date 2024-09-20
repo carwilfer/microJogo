@@ -40,5 +40,6 @@ spec:
   ports:
     - port: 8084
       targetPort: 8084
+      nodePort: 30506
   selector:
     app: usuario-service

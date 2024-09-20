@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: jogo-service
-          image: jogo-service:latest
+          image: carwilfer/jogo-service:latest
           ports:
             - containerPort: 8087
           env:
@@ -42,4 +42,5 @@ spec:
     - protocol: TCP
       port: 8087
       targetPort: 8087
+      nodePort: 30505
   type: LoadBalancer
