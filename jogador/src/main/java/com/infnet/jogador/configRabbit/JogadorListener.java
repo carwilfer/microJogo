@@ -40,6 +40,7 @@ public class JogadorListener {
             LOGGER.error("Erro ao desserializar a mensagem: {}", e.getMessage(), e);
         } catch (Exception e) {
             LOGGER.error("Erro ao processar a mensagem: {}", e.getMessage(), e);
+            e.printStackTrace();
         }
     }
 }

@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: conta-service
   labels:
-    app: conta
+    app: conta-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: conta
+      app: conta-service
   template:
     metadata:
       labels:
-        app: conta
+        app: conta-service
     spec:
       containers:
         - name: conta-service
@@ -20,14 +20,12 @@ spec:
           ports:
             - containerPort: 8089
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://conta-postgres:5432/conta_db
-            - name: SPRING_DATASOURCE_USERNAME
-              value: postgres
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: postgres
-            - name: SPRING_RABBITMQ_HOST
-              value: conta-rabbitmq
+            - name: postgres
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: rabbithost
+              value: rabbitmq
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
 
 ---
 
@@ -36,11 +34,10 @@ kind: Service
 metadata:
   name: conta-service
 spec:
-  selector:
-    app: conta
+  type: ClusterIP
   ports:
-    - protocol: TCP
-      port: 8089
+    - port: 8089
       targetPort: 8089
-      nodePort: 30502
-  type: LoadBalancer
+      protocol: TCP
+  selector:
+    app: conta-service

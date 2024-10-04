@@ -13,10 +13,10 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:14
+          image: postgres:latest
           env:
             - name: POSTGRES_DB
-              value: usuario_db
+              value: postgres
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_PASSWORD

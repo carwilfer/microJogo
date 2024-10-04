@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: empresa-service-deployment
+  name: empresa-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: empresa-service
@@ -18,23 +18,23 @@ spec:
           ports:
             - containerPort: 8085
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres-service:5432/empresa_db
-            - name: SPRING_DATASOURCE_USERNAME
-              value: empresa_user
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: empresa_password
+            - name: postgres
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: rabbithost
+              value: rabbitmq
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: empresa-service
 spec:
+  type: ClusterIP
+  ports:
+    - port: 8085
+      targetPort: 8085
+      protocol: TCP
   selector:
     app: empresa-service
-  ports:
-    - protocol: TCP
-      port: 8085
-      targetPort: 8085
-      nodePort: 30503
-  type: LoadBalancer

@@ -1,9 +1,12 @@
 package com.infnet.usuario.configRabbit;
 
+import brave.Tracing;
+import brave.spring.rabbit.SpringRabbitTracing;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -84,12 +87,12 @@ public class RabbitConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
-        return rabbitTemplate;
-    }
+//    @Bean
+//    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+//        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+//        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+//        return rabbitTemplate;
+//    }
 
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
@@ -118,5 +121,21 @@ public class RabbitConfig {
         });
 
         return container;
+    }
+
+    @Bean
+    public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
+        return SpringRabbitTracing.newBuilder(tracing).build();
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, SpringRabbitTracing tracing) {
+        RabbitTemplate rabbitTemplate = tracing.newRabbitTemplate(connectionFactory);
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public ContainerCustomizer<SimpleMessageListenerContainer>containerCustomizer(){
+        return container -> container.setObservationEnabled(true);
     }
 }

@@ -1,5 +1,5 @@
 # Passo 3: Aplicar as configurações para os componentes de infraestrutura necessários antes dos microsserviços
-echo "Aplicando configurações para Fluentd, Elasticsearch, Kibana..."
+echo "Aplicando configurações para a aplicação, PostgreSQL, RabbitMQ, Fluentd, Elasticsearch, Kibana..."
 
 # Aplicar ConfigMap do Fluentd
 kubectl apply -f fluentd-configmap.yaml
@@ -14,12 +14,18 @@ echo "Aguardando Elasticsearch e Kibana iniciarem..."
 sleep 30
 
 # Passo 4: Aplicar PostgreSQL, RabbitMQ, e outros serviços de infraestrutura
-echo "Aplicando PostgreSQL e RabbitMQ..."
+echo "Aplicando PostgreSQL, zipkin e RabbitMQ..."
 kubectl apply -f postgres-deployment.yaml
+kubectl port-forward deployments/postgres 5433:5432
+
 kubectl apply -f rabbitmq-deployment.yaml
+kubectl port-forward deployments/rabbitmq 15673:15672
+
+kubectl apply -f zipkin-deployment.yaml
+kubectl port-forward deployments/zipkin 9411:9411
 
 # Esperar alguns segundos para garantir que o banco de dados e RabbitMQ estejam prontos
-echo "Aguardando PostgreSQL e RabbitMQ iniciarem..."
+echo "Aguardando PostgreSQL, Zipkin e RabbitMQ iniciarem..."
 sleep 30
 
 # Passo 5: Aplicar os microsserviços na sequência correta

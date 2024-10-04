@@ -2,10 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: usuario-service
-  labels:
-    app: usuario-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: usuario-service
@@ -20,26 +18,23 @@ spec:
           ports:
             - containerPort: 8084
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://usuario-postgres:5432/usuario_db
-            - name: SPRING_DATASOURCE_USERNAME
-              value: postgres
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: postgres
-            - name: SPRING_RABBITMQ_HOST
-              value: usuario-rabbitmq
+            - name: postgres
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: rabbithost
+              value: rabbitmq
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: usuario-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-    - port: 8084
+    - port: 8084  # Altere para a porta que seu aplicativo usa
       targetPort: 8084
-      nodePort: 30506
+      protocol: TCP
   selector:
     app: usuario-service

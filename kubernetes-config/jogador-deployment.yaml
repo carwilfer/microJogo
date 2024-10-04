@@ -3,43 +3,42 @@ kind: Deployment
 metadata:
   name: jogador-service
   labels:
-    app: jogador
+    app: jogador-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: jogador
+      app: jogador-service
   template:
     metadata:
       labels:
-        app: jogador
+        app: jogador-service
     spec:
       containers:
-        - name: jogador
+        - name: jogador-service
           image: carwilfer/jogador-service:latest
           ports:
             - containerPort: 8086
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://jogador-postgres:5432/jogador_db
-            - name: SPRING_DATASOURCE_USERNAME
-              value: postgres
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: postgres
-            - name: SPRING_RABBITMQ_HOST
-              value: jogador-rabbitmq
+            - name: postgres
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: rabbithost
+              value: rabbitmq
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
 
 ---
 
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: jogador-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 8086
       targetPort: 8086
-      nodePort: 30504
+      protocol: TCP
   selector:
-    app: jogador
+    app: jogador-service

@@ -50,6 +50,12 @@ public class EmpresaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<EmpresaDTO> atualizarEmpresa(@PathVariable Long id, @RequestBody EmpresaDTO empresaDTO) {
+        EmpresaDTO empresaAtualizada = empresaService.atualizarEmpresa(id, empresaDTO);
+        return ResponseEntity.ok(empresaAtualizada);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarEmpresa(@PathVariable Long id) {
         empresaService.deletarEmpresa(id);

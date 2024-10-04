@@ -60,6 +60,19 @@ public class EmpresaService {
                 .toList();
     }
 
+    public EmpresaDTO atualizarEmpresa(Long id, EmpresaDTO empresaDTO) {
+        Empresa empresa = empresaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada"));
+
+        // Atualizar os campos da empresa com os dados do DTO
+        empresa.setRazaoSocial(empresaDTO.getRazaoSocial());
+        empresa.setCnpj(empresaDTO.getCnpj());
+        empresa.setAtivo(empresaDTO.getAtivo());
+
+        Empresa empresaAtualizada = empresaRepository.save(empresa);
+        return new EmpresaDTO(empresaAtualizada);
+    }
+
     public void deletarEmpresa(Long id) {
         empresaRepository.deleteById(id);
     }

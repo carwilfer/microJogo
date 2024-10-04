@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: jogo-service
   labels:
-    app: jogo
+    app: jogo-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: jogo
+      app: jogo-service
   template:
     metadata:
       labels:
-        app: jogo
+        app: jogo-service
     spec:
       containers:
         - name: jogo-service
@@ -20,27 +20,23 @@ spec:
           ports:
             - containerPort: 8087
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://jogo-postgres:5432/jogo_db
-            - name: SPRING_DATASOURCE_USERNAME
-              value: postgres
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: postgres
-            - name: SPRING_RABBITMQ_HOST
-              value: jogo-rabbitmq
+            - name: postgres
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: rabbithost
+              value: rabbitmq
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: jogo-service
 spec:
-  selector:
-    app: jogo
+  type: ClusterIP
   ports:
-    - protocol: TCP
-      port: 8087
+    - port: 8087
       targetPort: 8087
-      nodePort: 30505
-  type: LoadBalancer
+      protocol: TCP
+  selector:
+    app: jogo-service

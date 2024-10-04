@@ -4,10 +4,14 @@ import com.infnet.avaliacao.client.JogoFeignClient;
 import com.infnet.avaliacao.dto.AvaliacaoDTO;
 import com.infnet.avaliacao.model.Avaliacao;
 import com.infnet.avaliacao.repository.AvaliacaoRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AvaliacaoService {
@@ -22,8 +26,23 @@ public class AvaliacaoService {
         return avaliacaoRepository.findAll();
     }
 
-    public Avaliacao getAvaliacaoById(Long id) {
-        return avaliacaoRepository.findById(id).orElse(null);
+    public Optional<AvaliacaoDTO> getAvaliacaoById(Long id) {
+        return avaliacaoRepository.findById(id)
+                .map(avaliacao -> {
+                    AvaliacaoDTO avaliacaoDTO = new AvaliacaoDTO();
+                    BeanUtils.copyProperties(avaliacao, avaliacaoDTO);
+                    return avaliacaoDTO;
+                });
+    }
+
+    public List<Avaliacao>encontrarAvaliacaoId(Long id) throws Exception{
+        List<Avaliacao> avaliacaoList = avaliacaoRepository.encontrarAvaliacaoId(id);
+        if(!avaliacaoList.isEmpty()){
+            return avaliacaoList;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
+        }
+
     }
 
     public Avaliacao createAvaliacao(AvaliacaoDTO avaliacaoDTO) {

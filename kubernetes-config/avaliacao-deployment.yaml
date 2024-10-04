@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: avaliacao-service
   labels:
-    app: avaliacao
+    app: avaliacao-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: avaliacao
+      app: avaliacao-service
   template:
     metadata:
       labels:
-        app: avaliacao
+        app: avaliacao-service
     spec:
       containers:
         - name: avaliacao-service
@@ -20,14 +20,12 @@ spec:
           ports:
             - containerPort: 8090
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://avaliacao-postgres:5432/avaliacao_db
-            - name: SPRING_DATASOURCE_USERNAME
-              value: postgres
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: postgres
-            - name: SPRING_RABBITMQ_HOST
-              value: avaliacao-rabbitmq
+            - name: postgres
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: rabbithost
+              value: rabbitmq
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
 
 ---
 
@@ -36,11 +34,10 @@ kind: Service
 metadata:
   name: avaliacao-service
 spec:
-  selector:
-    app: avaliacao
+  type: ClusterIP
   ports:
-    - protocol: TCP
-      port: 8090
+    - port: 8090
       targetPort: 8090
-      nodePort: 30500
-  type: LoadBalancer
+      protocol: TCP
+  selector:
+    app: avaliacao-service

@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "jogador-service", url = "http://localhost:8086")
+//@FeignClient(name = "jogador-service", url = "http://localhost:8086")
+@FeignClient(name = "jogador-service", url = "http://jogador-service:8086")
 public interface JogadorClient {
     @GetMapping("api/jogadores/{id}")
     JogadorDTO encontrarPorId(@PathVariable("id") Long id);

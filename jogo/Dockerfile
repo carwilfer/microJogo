@@ -9,5 +9,5 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/target/jogo-0.0.1-SNAPSHOT.jar ./jogo-service.jar
-EXPOSE 8086
+EXPOSE 8087
 ENTRYPOINT ["java", "-jar", "jogo-service.jar"]

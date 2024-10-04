@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/avaliacoes")
@@ -23,12 +24,15 @@ public class AvaliacaoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Avaliacao> getAvaliacaoById(@PathVariable Long id) {
-        Avaliacao avaliacao = avaliacaoService.getAvaliacaoById(id);
-        if (avaliacao != null) {
-            return ResponseEntity.ok(avaliacao);
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<AvaliacaoDTO> getAvaliacaoById(@PathVariable Long id) {
+        Optional<AvaliacaoDTO> avaliacaoDTO = avaliacaoService.getAvaliacaoById(id);
+        return avaliacaoDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/listar/avaliacaoJogo/{id}")
+    public ResponseEntity<List<Avaliacao>> encontrarAvaliacaoId(@PathVariable Long id) throws Exception {
+        List<Avaliacao> avaliacoes = avaliacaoService.encontrarAvaliacaoId(id);
+        return ResponseEntity.ok(avaliacoes);
     }
 
     @PostMapping
