@@ -1,6 +1,5 @@
-package com.infnet.compra.dto;
+package com.infnet.bff.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data

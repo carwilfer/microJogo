@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bff-service
+  template:
+    metadata:
+      labels:
+        app: bff-service
+    spec:
+      containers:
+        - name: bff-service
+          image: carwilfer/bff-service:latest
+          ports:
+            - containerPort: 8091
+          env:
+            - name: ZIPKINENDPOINT
+              value: http://zipkin:9411/api/v2/spans
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8091  # Altere para a porta que seu aplicativo usa
+      targetPort: 8091
+      protocol: TCP
+  selector:
+    app: bff-service

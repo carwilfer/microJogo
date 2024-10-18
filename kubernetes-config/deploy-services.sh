@@ -44,6 +44,8 @@ sleep 10
 kubectl apply -f jogo-deployment.yaml
 sleep 10
 kubectl apply -f usuario-deployment.yaml
+sleep 10
+kubectl apply -f bff-deployment.yaml
 
 # Passo 6: Verificar o status de todos os pods após o deploy
 echo "Verificando status dos pods..."

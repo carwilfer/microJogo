@@ -1,8 +1,8 @@
-package com.infnet.compra.dto;
-
-import java.util.List;
+package com.infnet.bff.dto;
 
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @Getter
@@ -10,8 +10,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContaDTO {
+
     private Long id;
+    private Long usuarioId;
+    private Long adminId;
+    private String tipoUsuario;
     private double limiteDisponivel;
     private boolean ativo;
+    private List<CompraDTO> compra;
     private double saldo;
 }

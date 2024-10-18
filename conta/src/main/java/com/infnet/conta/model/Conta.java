@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -23,6 +24,7 @@ public class Conta {
 
     private double limiteDisponivel;
     private boolean ativo;
+    private Long adminId;
     private double saldo;
 
     @Column(name = "tipo_usuario")
@@ -32,9 +34,9 @@ public class Conta {
     private Long usuarioId;
 
     @ElementCollection
-    private List<Long> jogosIds;
+    private List<Long> jogosIds = new ArrayList<>();
 
     @ElementCollection
-    private List<Long> compraIds;
+    private List<Long> compraIds = new ArrayList<>();
 
 }

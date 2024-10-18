@@ -1,4 +1,4 @@
-package com.infnet.compra.dto;
+package com.infnet.bff.dto;
 
 import lombok.*;
 
@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class CompraDTO {
+
     private Long id;
     private LocalDateTime data;
     private Long usuarioId;

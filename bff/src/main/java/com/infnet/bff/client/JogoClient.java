@@ -1,6 +1,6 @@
-package com.infnet.compra.client;
+package com.infnet.bff.client;
 
-import com.infnet.compra.dto.JogoDTO;
+import com.infnet.bff.dto.JogoDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

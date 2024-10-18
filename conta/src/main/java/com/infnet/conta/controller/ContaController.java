@@ -1,16 +1,14 @@
 package com.infnet.conta.controller;
 
-import com.infnet.conta.client.UsuarioClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.infnet.conta.dto.CompraDTO;
 import com.infnet.conta.dto.ContaDTO;
-import com.infnet.conta.dto.UsuarioDTO;
 import com.infnet.conta.model.Conta;
 import com.infnet.conta.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/contas")
@@ -20,8 +18,13 @@ public class ContaController {
     private ContaService contaService;
 
     @PostMapping("/criar")
-    public ResponseEntity<ContaDTO> createConta(@RequestBody ContaDTO contaDTO) {
-        ContaDTO createdConta = contaService.createConta(contaDTO);
+    public ResponseEntity<Conta> createConta(@RequestBody ContaDTO conta) {
+        Conta createdConta = null;
+        try {
+            createdConta = contaService.createConta(conta);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(createdConta);
     }
 

@@ -1,5 +1,6 @@
 package com.infnet.jogo.service;
 
+//import com.infnet.jogo.client.EmpresaClient;
 import com.infnet.jogo.client.EmpresaClient;
 import com.infnet.jogo.dto.EmpresaDTO;
 import com.infnet.jogo.dto.JogoDTO;
@@ -101,17 +102,4 @@ public class JogoService {
         return Optional.ofNullable(empresaClient.encontrarPorId(empresaId))
                 .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada para o ID: " + empresaId));
     }
-
-//    private EmpresaDTO validarEmpresa(Long empresaId) {
-//        try {
-//            EmpresaDTO empresaDTO = empresaClient.encontrarPorId(empresaId);
-//            if (empresaDTO == null) {
-//                throw new IllegalArgumentException("Empresa não encontrada para o ID: " + empresaId);
-//            }
-//            return empresaDTO;
-//        } catch (FeignException e) {
-//            e.printStackTrace();
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao comunicar com o serviço de empresa", e);
-//        }
-//    }
 }

@@ -1,6 +1,5 @@
 package com.infnet.compra.repository;
 
-import com.infnet.compra.dto.ContaDTO;
 import com.infnet.compra.model.Compra;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

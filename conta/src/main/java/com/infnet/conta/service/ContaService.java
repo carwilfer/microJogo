@@ -1,25 +1,15 @@
 package com.infnet.conta.service;
 
-import com.infnet.conta.client.CompraClient;
-import com.infnet.conta.client.EmpresaClient;
-import com.infnet.conta.client.JogadorClient;
-import com.infnet.conta.client.UsuarioClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.infnet.conta.dto.*;
 import com.infnet.conta.model.Conta;
 import com.infnet.conta.repository.ContaRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,41 +18,24 @@ public class ContaService {
     @Autowired
     private ContaRepository contaRepository;
 
-    @Autowired
-    private CompraClient compraClient;
-
-    @Autowired
-    private UsuarioClient usuarioClient;
-
-    public ContaDTO createConta(ContaDTO contaDTO) {
-        // Obtém os detalhes do usuário
-        UsuarioDTO admin = usuarioClient.encontrarPorId(contaDTO.getAdminId());
-        UsuarioDTO usuario = usuarioClient.encontrarPorId(contaDTO.getUsuarioId());
-
-        // Verifica se o admin tem permissão para criar conta
-        if (admin == null || !"ADMIN".equals(admin.getTipoUsuario())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado.");
-        }
-
-        if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não encontrado.");
-        }
-
-        // Criação da conta
+    public Conta createConta(ContaDTO contaDTO) throws JsonProcessingException {
         Conta conta = new Conta();
-        conta.setLimiteDisponivel(contaDTO.getLimiteDisponivel());
-        conta.setAtivo(contaDTO.isAtivo());
-        conta.setUsuarioId(contaDTO.getUsuarioId());
-        conta.setTipoUsuario(usuario.getTipoUsuario());
-        conta.setSaldo(contaDTO.getSaldo());
-        conta.setCompraIds(new ArrayList<>());
+        BeanUtils.copyProperties(contaDTO, conta);
 
-        // Salva a conta no repositório
-        Conta savedConta = contaRepository.save(conta);
-        ContaDTO savedContaDTO =  convertToDTO(savedConta);
-        savedContaDTO.setTipoUsuario(admin.getTipoUsuario());
-        savedContaDTO.setAdminId(admin.getId());
-        return savedContaDTO;
+        conta.setAdminId(contaDTO.getAdminId());
+        conta.setTipoUsuario(contaDTO.getTipoUsuario());
+
+        // Atualiza `compraIds` corretamente
+        if (contaDTO.getComprasIds() != null && !contaDTO.getComprasIds().isEmpty()) {
+            List<Long> compraIds = contaDTO.getComprasIds()
+                    .stream()
+                    .map(CompraDTO::getUsuarioId) // Altere para capturar o id correto da compra
+                    .collect(Collectors.toList());
+            conta.setCompraIds(compraIds);
+        }
+
+        Conta novaConta = contaRepository.save(conta);
+        return novaConta;
     }
 
     public ContaDTO getContaById(Long id) {
@@ -108,19 +81,23 @@ public class ContaService {
     private ContaDTO convertToDTO(Conta conta) {
         ContaDTO dto = new ContaDTO();
         dto.setId(conta.getId());
+        dto.setAdminId(conta.getAdminId());
+        dto.setTipoUsuario(conta.getTipoUsuario());
         dto.setLimiteDisponivel(conta.getLimiteDisponivel());
         dto.setAtivo(conta.isAtivo());
         dto.setUsuarioId(conta.getUsuarioId());
-
-        List<CompraDTO> compras = conta.getCompraIds().stream()
-                .map(compraId -> {
-                    ResponseEntity<CompraDTO> response = compraClient.getCompraById(compraId);
-                    return response.getBody();
-                })
-                .collect(Collectors.toList());
-
-        dto.setCompra(compras);
         dto.setSaldo(conta.getSaldo());
+
+        // Preencher a lista de compraIds corretamente
+        List<CompraDTO> comprasIds = new ArrayList<>();
+        for (Long compraId : conta.getCompraIds()) {
+            // Aqui você deve buscar a compra pelo ID, se necessário, ou criar um DTO vazio
+            CompraDTO compraDTO = new CompraDTO();
+            compraDTO.setUsuarioId(compraId); // ou outros campos relevantes
+            comprasIds.add(compraDTO);
+        }
+        dto.setComprasIds(comprasIds);
+
         return dto;
     }
 }

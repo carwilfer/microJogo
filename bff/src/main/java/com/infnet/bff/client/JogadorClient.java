@@ -1,6 +1,6 @@
-package com.infnet.conta.client;
+package com.infnet.bff.client;
 
-import com.infnet.conta.dto.JogadorDTO;
+import com.infnet.bff.dto.JogadorDTO;
 import feign.FeignException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.ExceptionHandler;
